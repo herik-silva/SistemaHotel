@@ -62,7 +62,7 @@ class AccommodationInteractor implements interactor {
                     accommodationSelected.id,
                     accommodationSelected.descricao,
                     accommodationSelected.custoDiaria
-                    );
+                );
             }
         }
         catch(error){

@@ -1,12 +1,14 @@
 class Room {
     private roomId: number;
     private status: string;
-    private accommodation: Accommodation;
+    private photo: string;
+    private accommodationId: number;
 
-    constructor(roomId: number, status: string, accommodation: Accommodation){
+    constructor(roomId: number, status: string, accommodation: number, photo: string){
         this.roomId = roomId;
         this.status = status;
-        this.accommodation = accommodation;
+        this.accommodationId = accommodation;
+        this.photo = photo;
     }
 
     getRoomId(): number {
@@ -17,12 +19,20 @@ class Room {
         return this.status;
     }
 
-    getAccommodation(): Accommodation {
-        return this.accommodation;
+    getPhoto(): string {
+        return this.photo;
     }
 
-    setAccommodation(newAccommodation: Accommodation): void {
-        this.accommodation = newAccommodation;
+    getAccommodation(): number {
+        return this.accommodationId;
+    }
+
+    setPhoto(newPhoto: string): void {
+        this.photo = newPhoto;
+    }
+
+    setAccommodation(newAccommodation: number): void {
+        this.accommodationId = newAccommodation;
     }
 
     makeRoomReservation(): boolean {
