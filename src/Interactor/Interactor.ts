@@ -1,5 +1,7 @@
+import Database from "./Database";
+
 interface interactor {
-    getConnection(): Promise<any>;
+    getConnection(database: Database): Promise<any>;
 
     insert(...args): Promise<boolean>;
     findByPk(id: number): Promise<any>;

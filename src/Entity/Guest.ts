@@ -1,20 +1,25 @@
-import Company from "./Company";
 import People from "./People";
 
 class Guest extends People {
-    private company: Company;
+    private companyId: number;
     private lastAcommodationId: number;
 
-    getCompany(): Company {
-        return this.company;
+    constructor(id: number, name: string, cpf: string, contactPhone: Array<string>, city: string, company: number = undefined, lastAccommodationId: number = undefined, photo: string = undefined){
+        super(id, name, cpf, contactPhone, photo, city);
+        this.companyId = company;
+        this.lastAcommodationId = lastAccommodationId;
+    }
+
+    getCompany(): number {
+        return this.companyId;
     }
 
     getLastAccommodationId(): number {
         return this.lastAcommodationId;
     }
 
-    setCompany(newCompany: Company): void {
-        this.company = newCompany;
+    setCompany(newCompany: number): void {
+        this.companyId = newCompany;
     }
     
     setLastAccommodationId(newId: number): void {

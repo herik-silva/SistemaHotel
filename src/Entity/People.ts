@@ -3,10 +3,16 @@ abstract class People {
     protected name: string;
     protected contactPhone: Array<string>;
     protected cpf: string;
+    protected photo: string;
+    protected city: string;
     
-    constructor(id: number, name: string){
+    constructor(id: number, name: string, cpf: string, contactPhone: Array<string> = [], photo: string = undefined, city: string){
         this.id = id;
         this.name = name;
+        this.cpf = cpf;
+        this.contactPhone = contactPhone;
+        this.photo = photo;
+        this.city = city;
     }
 
     public getId(): number {
@@ -25,12 +31,28 @@ abstract class People {
         return this.cpf;
     }
 
+    public getPhoto(): string {
+        return this.photo;
+    }
+
+    public getCity(): string {
+        return this.city;
+    }
+
+    public setPhoto(newPhoto: string) {
+        this.photo = newPhoto;
+    }
+
     public setCpf(newCpf: string): void {
         this.cpf = newCpf;
     }
 
     public setName(newName: string): void {
         this.name = newName;
+    }
+
+    public setCity(newCity: string): void {
+        this.city = newCity;
     }
 
     public addContactPhone(newNumber: string): boolean {
