@@ -33,3 +33,5 @@ class Accommodation {
         return JSON.stringify(this);
     }
 }
+
+export default Accommodation;
