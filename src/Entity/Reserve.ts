@@ -1,17 +1,17 @@
 import Employee from "./Employee";
 import Guest from "./Guest";
-import Room from "./Room";
 
 class Reserve {
     private reserveId: number;
     private entryDate: Date;
     private checkOutDate: Date;
     private amountPeople: number;
-    private room: Room;
-    private guest: Guest;
-    private employee: Employee;
+    private roomId: number;
+    private guest: number;
+    private employee: number;
     private status: string;
     private checkinAmount: number;
+    private payment: number;
 
     getReserveId(): number {
         return this.reserveId;
@@ -29,15 +29,15 @@ class Reserve {
         return this.amountPeople;
     }
 
-    getRoomNumber(): Room {
-        return this.room;
+    getroomIdNumber(): number {
+        return this.roomId;
     }
 
-    getGuestId(): Guest {
+    getGuestId(): number {
         return this.guest;
     }
 
-    getEmployeeId(): Employee {
+    getEmployeeId(): number {
         return this.employee;
     }
 
@@ -47,6 +47,10 @@ class Reserve {
 
     getCheckinAmout(): number {
         return this.checkinAmount;
+    }
+
+    getPayment(): number {
+        return this.payment;
     }
 
     setReserveId(reserveId: number): void {
@@ -65,15 +69,15 @@ class Reserve {
         this.amountPeople = amoutPeople;
     }
 
-    setRoomNumber(newRoom: Room): void {
-        this.room = newRoom;
+    setRoomId(newRoomId: number): void {
+        this.roomId = newRoomId;
     }
 
-    setGuestId(newGuest: Guest): void {
+    setGuestId(newGuest: number): void {
         this.guest = newGuest;
     }
 
-    setEmployeeId(newEmployee: Employee): void {
+    setEmployeeId(newEmployee: number): void {
         this.employee = newEmployee;
     }
 
@@ -81,12 +85,12 @@ class Reserve {
         this.status = status;
     }
 
-    makeCheckin(): void {
-        this.checkinAmount++;
+    setPayment(paymentId: number): void {
+        this.payment = paymentId;
     }
 
-    calculateTotalPayable(): number {
-        return this.checkinAmount * this.room.getAccommodation().getDailyPrice();
+    makeCheckin(): void {
+        this.checkinAmount++;
     }
 }
 

@@ -5,7 +5,15 @@ class Employee extends People {
     private turn: string;
     private currentWage: number;
     private password: string;
-    private responsibility: Responsibility;
+    private responsibilityId: number;
+
+    constructor(id: number, name: string, cpf: string, contactPhone: Array<string> = [], photo: string = undefined,turn: string, currentWage: number, password: string, responsabilityId: number){
+        super(id,name,cpf,contactPhone,photo);
+        this.turn = turn;
+        this.currentWage = currentWage;
+        this.password = password;
+        this.responsibilityId = responsabilityId;
+    }
 
     getTurn(): string {
         return this.turn;
@@ -19,8 +27,8 @@ class Employee extends People {
         return this.password;
     }
 
-    getResponsability(): Responsibility {
-        return this.responsibility;
+    getResponsability(): number {
+        return this.responsibilityId;
     }
 
     setTurn(newTurn: string) {
@@ -35,8 +43,8 @@ class Employee extends People {
         this.password = newPassword;
     }
 
-    setResponsability(newResponsability: Responsibility): void {
-        this.responsibility = newResponsability;
+    setResponsability(newResponsability: number): void {
+        this.responsibilityId = newResponsability;
     }
 }
 
