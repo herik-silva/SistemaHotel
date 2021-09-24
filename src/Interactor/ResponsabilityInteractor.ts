@@ -16,11 +16,13 @@ class ResponsabilityInteractor implements interactor {
 
     async find(name: string): Promise<Array<Responsability>> {
         try{
+            const stringSql = `SELECT * FROM cargos WHERE descricao LIKE "${name}%"`;
+
             const connection = await this.getConnection();
             const responsabilityFound = new Array<Responsability>();
             console.log("Buscando por ", name, " no banco de dados");
 
-            const rows = await connection.query(`SELECT * FROM cargos WHERE descricao LIKE "${name}%"`);
+            const rows = await connection.query(stringSql);
         
             if(rows[0][0]){
                 var index = 0;
@@ -50,9 +52,10 @@ class ResponsabilityInteractor implements interactor {
 
     async findByPk(id: number): Promise<Responsability> {
         try{
-            const connection = await this.getConnection();
+            const stringSql = "SELECT * FROM cargos WHERE id = ?";
 
-            const row = await connection.query("SELECT * FROM cargos WHERE id = ?", id);
+            const connection = await this.getConnection();
+            const row = await connection.query(stringSql, id);
             connection.end();
 
             if(row[0][0]){
@@ -72,9 +75,10 @@ class ResponsabilityInteractor implements interactor {
 
     async insert(id: number, name: string, acessLevel: number): Promise<boolean> {
         try{
-            const connection = await this.getConnection();
+            const stringSql = "INSERT INTO cargos VALUES(?,?,?)";
 
-            await connection.execute("INSERT INTO cargos VALUES(?,?,?)",
+            const connection = await this.getConnection();
+            await connection.execute(stringSql,
                 [
                     id,
                     name,
@@ -93,9 +97,10 @@ class ResponsabilityInteractor implements interactor {
 
     async update(id: number, name: string, acessLevel: number): Promise<boolean> {
         try{
-            const connection = await this.getConnection();
+            const stringSql = "UPDATE cargos SET nome = ?, nivelAcesso = ? WHERE id = ?";
 
-            await connection.execute("UPDATE cargos SET nome = ?, nivelAcesso = ? WHERE id = ?",
+            const connection = await this.getConnection();
+            await connection.execute(stringSql,
                 [
                     name,
                     acessLevel,
@@ -114,9 +119,10 @@ class ResponsabilityInteractor implements interactor {
 
     async delete(id: number): Promise<boolean> {
         try{
-            const connection = await this.getConnection();
+            const stringSql = "DELETE FROM cargos WHERE id = ?";
 
-            await connection.execute("DELETE FROM cargos WHERE id = ?", [id]);
+            const connection = await this.getConnection();
+            await connection.execute(stringSql, [id]);
             connection.end();
 
             return true;

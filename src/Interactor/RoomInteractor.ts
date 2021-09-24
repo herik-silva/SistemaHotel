@@ -17,14 +17,15 @@ class RoomInteractor implements interactor {
 
     async insert(number: number, photo: string, status: string, accommodation: number): Promise<boolean> {
         try{
-            const connection = await this.getConnection();
+            const stringSql = "INSERT INTO quartos VALUES(?,?,?,?)";
 
-            await connection.execute("INSERT INTO quartos VALUES(?,?,?,?)",
+            const connection = await this.getConnection();
+            await connection.execute(stringSql,
                 [
                     number,
                     photo,
-                    status,
-                    accommodation
+                    accommodation,
+                    status
                 ]
             );
             connection.end();
@@ -38,9 +39,10 @@ class RoomInteractor implements interactor {
 
     async findByPk(id: number): Promise<Room> {
         try{
+            const stringSql = "SELECT * FROM quartos WHERE numero = ?";
+            
             const connection = await this.getConnection();
-
-            const row = await connection.query("SELECT * FROM quartos WHERE id = ?", id);
+            const row = await connection.query(stringSql, id);
             connection.end();
 
             if(row[0][0]){
@@ -61,10 +63,12 @@ class RoomInteractor implements interactor {
 
     async find(field: string, value: string): Promise<Array<Room>> {
         try{
+            const stringSql = `SELECT * FROM quartos WHERE ${field} LIKE "${value}%"`;
+
             const connection = await this.getConnection();
             const roomsFound = new Array<Room>();
 
-            const rows = await connection.query(`SELECT * FROM quartos WHERE ${field} LIKE "${value}%"`);
+            const rows = await connection.query(stringSql);
 
             if(rows[0][0]){
                 var index = 0;
@@ -95,9 +99,10 @@ class RoomInteractor implements interactor {
 
     async update(number: number, photo: string, status: string, accommodation: number): Promise<boolean> {
         try{
-            const connection = await this.getConnection();
+            const stringSql = "UPDATE quartos SET foto = ?, statusAtual = ?, idAcomodacao = ? WHERE numero = ?";
 
-            await connection.execute("UPDATE quartos SET foto = ?, statusAtual = ?, idAcomodacao = ? WHERE numero = ?",
+            const connection = await this.getConnection();
+            await connection.execute(stringSql,
                 [
                     photo,
                     status,
@@ -116,9 +121,10 @@ class RoomInteractor implements interactor {
 
     async delete(id: number): Promise<boolean> {
         try{
+            const stringSql = "DELETE FROM quartos WHERE numero = ?";
+            
             const connection = await this.getConnection();
-
-            await connection.execute("DELETE FROM quartos WHERE numero = ?", [id]);
+            await connection.execute(stringSql, [id]);
             connection.end();
 
             return true;

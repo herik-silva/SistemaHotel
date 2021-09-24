@@ -20,11 +20,13 @@ class GuestInteractor implements interactor {
      * @returns 
      */
     async find(name: string): Promise<Array<Guest>> {
+        const stringSql = `SELECT * FROM hospedes WHERE nome LIKE "${name}%"`;
+
         const connection = await this.getConnection();
         const guestsFound = new Array<Guest>();
-        console.log("Conectou!\nBuscando por ", name, " no banco de dados");
 
-        const rows = await connection.query(`SELECT * FROM hospedes WHERE nome LIKE "${name}%"`);
+        const rows = await connection.query(stringSql);
+        connection.end();
 
         // Verifica se algum hospede foi encontrado!
         if(rows[0][0]){
@@ -48,8 +50,6 @@ class GuestInteractor implements interactor {
     
                 index++;
             }
-
-            connection.end();
             
             return guestsFound;
         }
@@ -61,9 +61,11 @@ class GuestInteractor implements interactor {
      * @returns 
      */
     async findByPk(id: number): Promise<Guest> {
-        const connection = await this.getConnection();
+        const stringSql = "SELECT * FROM hospedes WHERE id = ?";
 
-        const row = await connection.query("SELECT * FROM hospedes WHERE id = ?", id);
+        const connection = await this.getConnection();
+        const row = await connection.query(stringSql, id);
+        connection.end();
 
         // Verifica se foi encontrado algum hospede
         if(row[0][0]){
@@ -96,9 +98,10 @@ class GuestInteractor implements interactor {
      */
     async insert(id:number, name:string, cpf:string, photo: string, contactPhone:Array<string>, city:string, companyId: number, lastIdAccommodation: number): Promise<boolean> {
         try{
+            const stringSql = "INSERT INTO hospedes VALUES(?,?,?,?,?,?,?,?,?)";
+
             const connection = await this.getConnection();
-    
-            await connection.execute("INSERT INTO hospedes VALUES(?,?,?,?,?,?,?,?,?)",
+            await connection.execute(stringSql,
                 [
                     id,
                     cpf,
@@ -135,9 +138,10 @@ class GuestInteractor implements interactor {
      */
     async update(id:number, name:string, cpf:string, photo: string, contactPhone:Array<string>, city:string, companyId: number, lastIdAccommodation: number): Promise<any> {
         try{
-            const connection = await this.getConnection();
+            const stringSql = "UPDATE hospedes SET CPF = ?, nome = ?, foto = ?, cidade = ?, telefoneContatoA = ?, telefoneContatoB = ?, idEmpresa = ?, idUltimaAcomodacao = ? WHERE id = ?;";
 
-            await connection.execute("UPDATE hospedes SET CPF = ?, nome = ?, foto = ?, cidade = ?, telefoneContatoA = ?, telefoneContatoB = ?, idEmpresa = ?, idUltimaAcomodacao = ? WHERE id = ?;",
+            const connection = await this.getConnection();
+            await connection.execute(stringSql,
                 [
                     cpf,
                     name,
@@ -169,9 +173,10 @@ class GuestInteractor implements interactor {
      */
     async delete(id: number): Promise<boolean> {
         try{
+            const stringSql = "DELETE FROM hospedes WHERE id = ?";
+            
             const connection = await this.getConnection();
-
-            await connection.execute("DELETE FROM hospedes WHERE id = ?", [id]);
+            await connection.execute(stringSql, [id]);
             connection.end();
 
             return true;

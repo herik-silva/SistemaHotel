@@ -20,11 +20,12 @@ class EmployeeInteractor implements interactor {
      * @returns 
      */
     async find(name: string): Promise<Array<Employee>> {
+        const stringSql = `SELECT * FROM funcionarios WHERE nome LIKE "${name}%"`;
+
         const connection = await this.getConnection();
         const employeesFound = new Array<Employee>();
-        console.log("Conectou!\nBuscando por ", name, " no banco de dados");
 
-        const rows = await connection.query(`SELECT * FROM funcionarios WHERE nome LIKE "${name}%"`);
+        const rows = await connection.query(stringSql);
 
         // Verifica se algum funcionario foi encontrado!
         if(rows[0][0]){
@@ -62,10 +63,12 @@ class EmployeeInteractor implements interactor {
      * @returns 
      */
     async findByPk(id: number): Promise<Employee> {
+        const stringSql = "SELECT * FROM funcionarios WHERE id = ?";
+
         const connection = await this.getConnection();
-
-        const row = await connection.query("SELECT * FROM funcionarios WHERE id = ?", id);
-
+        const row = await connection.query(stringSql, id);
+        connection.end();
+        
         // Verifica se foi encontrado algum funcionario
         if(row[0][0]){
             const employeeSelected = row[0][0];
@@ -99,8 +102,10 @@ class EmployeeInteractor implements interactor {
      */
     async insert(id:number, name:string, cpf:string, password: string, photo: string, turn: string, contactPhone:Array<string>, currentWage: number, responsabilityId: number): Promise<boolean> {
         try{
+            const stringSql = `INSERT INTO funcionarios VALUES(?,?,?,?,?,?,?,?,?,?)`;
+            
             const connection = await this.getConnection();
-            await connection.execute(`INSERT INTO funcionarios VALUES(?,?,?,?,?,?,?,?,?,?);`,
+            await connection.execute(stringSql,
                 [
                     id,
                     cpf,
@@ -138,9 +143,10 @@ class EmployeeInteractor implements interactor {
      */
     async update(id:number, name:string, cpf:string, password: string,photo: string, turn: string,contactPhone:Array<string>, currentWage: number, responsabilityId: number): Promise<any> {
         try{
-            const connection = await this.getConnection();
+            const stringSql = "UPDATE funcionarios SET CPF = ?, nome = ?, foto = ?, senha = ?, turno = ?, idCargo = ?, salarioAtual = ?, telContatoA = ?, telContatoB = ? WHERE id = ?;";
 
-            await connection.execute("UPDATE funcionarios SET CPF = ?, nome = ?, foto = ?, senha = ?, turno = ?, idCargo = ?, salarioAtual = ?, telContatoA = ?, telContatoB = ? WHERE id = ?;",
+            const connection = await this.getConnection();
+            await connection.execute(stringSql,
                 [
                     cpf,
                     name,
@@ -173,9 +179,10 @@ class EmployeeInteractor implements interactor {
      */
     async delete(id: number): Promise<boolean> {
         try{
+            const stringSql = "DELETE FROM funcionarios WHERE id = ?";
+            
             const connection = await this.getConnection();
-
-            await connection.execute("DELETE FROM funcionarios WHERE id = ?", [id]);
+            await connection.execute(stringSql, [id]);
             connection.end();
 
             return true;

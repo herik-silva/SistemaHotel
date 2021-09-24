@@ -13,6 +13,19 @@ class Reserve {
     private checkinAmount: number;
     private payment: number;
 
+    constructor(id: number, entryDate: Date, checkOutDate: Date, amountPeople: number, roomId: number, guest: number, employee: number, status: string, checkinAmount: number, payment: number) {
+        this.reserveId = id;
+        this.entryDate = entryDate;
+        this.checkOutDate = checkOutDate;
+        this.amountPeople = amountPeople;
+        this.roomId = roomId;
+        this.guest = guest;
+        this.employee = employee;
+        this.status = status;
+        this.checkinAmount = checkinAmount;
+        this.payment = payment;
+    }
+
     getReserveId(): number {
         return this.reserveId;
     }
