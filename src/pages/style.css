@@ -1,9 +1,43 @@
-.roomList {
-    width: 100%;
+.container{
+    min-width: 100vw;
     min-height: 92.9vh;
     background-color: #131313;
+    padding-top: 10px;
+}
+
+.container .title{
+    color: #FFF;
+    text-align: center;
+}
+
+.roomList {
     display: flex;
-    flex-direction: column;
+
     flex-wrap: wrap;
     padding: 10px;
+    padding-top: 0;
+}
+
+.card{
+    margin-left: 20px;
+    margin-top: 20px;
+}
+
+.status {
+    padding: 0 10px;
+    font-size: 14px;
+    color: #FFF;
+    border-radius: 10px;
+}
+
+.Livre {
+    background-color: green;
+}
+
+.Ocupado {
+    background-color: darkred;
+}
+
+.Limpeza {
+    background-color: orange;
 }

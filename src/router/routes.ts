@@ -60,8 +60,8 @@ router.get("/accommodation/:id", async (request: Request, response: Response) =>
     }
 });
 
-router.get("/reserve", async (request: Request, response: Response) => {
-    const reserveId = parseInt(request.body.id);
+router.get("/reserve/:id", async (request: Request, response: Response) => {
+    const reserveId = parseInt(request.params.id);
     const reserve = await reserveInteractor.findByPk(reserveId);
     const guest = await guestInteractor.findByPk(reserve.getGuestId());
     const room = await roomInteractor.findByPk(reserve.getroomIdNumber());
@@ -82,8 +82,8 @@ router.get("/reserve", async (request: Request, response: Response) => {
     }
 });
 
-router.get("/room", async (request: Request, response: Response) => {
-    const roomId = parseInt(request.body.id);
+router.get("/room/:id", async (request: Request, response: Response) => {
+    const roomId = parseInt(request.params.id);
     const room = await roomInteractor.findByPk(roomId);
 
     if(room){
