@@ -37,15 +37,35 @@ function factoryCard(title, description, button, status){
     divBody.appendChild(a);
     div.appendChild(divBody);
 
-    return div;
+    render(status, div);
 }
 
-const section = document.querySelector('.roomList');
+/**
+ * 
+ * @param {string} status 
+ * @param {Element} element 
+ */
+function render(status, element) {
+    const livres = document.querySelector('.livres');
+    const ocupados = document.querySelector('.ocupados');
+    const manutencao = document.querySelector('.manutencao');
 
-console.log("ENTROU")
+    if(status == "Livre"){
+        livres.appendChild(element);
+    }
+    else if(status == "Ocupado"){
+        ocupados.appendChild(element);
+    }
+    else{
+        manutencao.appendChild(element);
+    }
+}
+
 
 for(let index=0; index<10; index++){
-    section.appendChild(factoryCard("Quarto N° 1", "Suite: R$ 90,00", "Reservar", "Livre"));
-    section.appendChild(factoryCard("Quarto N° 2", "Suite: R$ 90,00", "Detalhes", "Ocupado"));
-    section.appendChild(factoryCard("Quarto N° 3", "Suite: R$ 90,00", "Reservar", "Limpeza"));
+    factoryCard("Quarto N° 1", "Suite: R$ 90,00", "Reservar", "Livre");
+    factoryCard("Quarto N° 2", "Suite: R$ 90,00", "Detalhes", "Ocupado");
+    factoryCard("Quarto N° 3", "Suite: R$ 90,00", "Reservar", "Limpeza");
 }
+
+showByState("Livre");
