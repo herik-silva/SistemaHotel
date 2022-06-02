@@ -8,7 +8,7 @@ import ResponsabilityInteractor from "../Interactor/ResponsabilityInteractor";
 import CompanyInteractor from "../Interactor/CompanyInteractor";
 import ReserveInteractor from "../Interactor/ReserveInteractor";
 
-const database = new Database("mysql","root","Arvorebinaria123","3306","hotelsilveira");
+const database = new Database("mysql","root","Arvorebinaria123","3306","hotel_silveira");
 
 const guestInteractor = new GuestInteractor(database);
 const accommodationInteractor = new AccommodationInteractor(database);
