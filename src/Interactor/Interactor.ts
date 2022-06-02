@@ -1,13 +1,13 @@
 import Database from "./Database";
 
 interface interactor {
-    getConnection(database: Database): Promise<any>;
+    getConnection(database: any | Database): any;
 
-    insert(...args): Promise<boolean>;
-    findByPk(id: number): Promise<any>;
-    find(...args): Promise<any>;
-    update(...args): Promise<any>;
-    delete(id: number): Promise<any>;
+    insert(...args): any;
+    findByPk(id: number): any;
+    find(...args): any;
+    update(...args): any;
+    delete(id: number): any;
 }
 
 export default interactor;
