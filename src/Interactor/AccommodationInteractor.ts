@@ -2,6 +2,7 @@ import Database from "./Database";
 import { createConnection, Connection } from "mysql2/promise";
 import interactor from "./Interactor";
 import Accommodation from "../Entity/Accommodation";
+import LogInteractor from "./LogInteractor";
 
 class AccommodationInteractor implements interactor {
     private database: Database;
@@ -73,8 +74,8 @@ class AccommodationInteractor implements interactor {
 
     async insert(id: number, description: string, dailyPrice: number): Promise<boolean> {
         try{
+            const logInteractor = new LogInteractor("../../logs/log.txt");
             const stringSql = "INSERT INTO acomodacoes VALUES(?,?,?)";
-
             const connection = await this.getConnection();
             await connection.execute(stringSql,
                 [
@@ -84,7 +85,7 @@ class AccommodationInteractor implements interactor {
                 ]
             );
             connection.end();
-
+            logInteractor.insert("Acomodação Inserida", `A acomodação ${description} com a diária de R$ ${dailyPrice} foi cadastrada`);
             return true;
         }
         catch(error){

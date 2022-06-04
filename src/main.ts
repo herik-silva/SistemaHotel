@@ -1,5 +1,10 @@
-import LogInteractor from "./Interactor/LogInteractor";
+import Server from "./Server";
+import Accommodation from "./Entity/Accommodation";
+import AccommodationInteractor from "./Interactor/AccommodationInteractor";
+import Database from "./Interactor/Database";
 
-const logInteractor = new LogInteractor("../../logs/log.txt");
+const server = new Server(3000);
+const database = new Database("mysql","root","Arvorebinaria123","3306","hotel_silveira");
 
-logInteractor.insert("Usuário não inserido", "Erro ao tentar inserir um funcionário")
+// accommodationInteractor.insert(accommodation.getId(), accommodation.getDescription(), accommodation.getDailyPrice());
+server.initServer();
