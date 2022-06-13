@@ -1,6 +1,12 @@
 import People from "./People";
-import Responsibility from "./Responsibility";
 
+/**
+ * Classe que representa um funcionário no sistema.
+ * O Funcionário é a entidade que opera o sistema,
+ * e sua responsabilidade/cargo tem um nível de acesso no sistema.
+ * 
+ * @author Herik Aparecida
+ */
 class Employee extends People {
     private turn: string;
     private currentWage: number;
