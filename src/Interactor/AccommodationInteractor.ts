@@ -4,6 +4,14 @@ import interactor from "./Interactor";
 import Accommodation from "../Entity/Accommodation";
 import LogInteractor from "./LogInteractor";
 
+/**
+ * Essa classe implementa os métodos da interface Interactor.
+ * 
+ * Acomodações são os tipos de quartos(Solteiro, Casal, Suite...).
+ * Elas compoem um quarto, sendo necessário para instanciar um quarto
+ * 
+ * @author Herik Aparecida
+ */
 class AccommodationInteractor implements interactor {
     private database: Database;
 
@@ -75,11 +83,10 @@ class AccommodationInteractor implements interactor {
     async insert(id: number, description: string, dailyPrice: number): Promise<boolean> {
         try{
             const logInteractor = new LogInteractor("../../logs/log.txt");
-            const stringSql = "INSERT INTO acomodacoes VALUES(?,?,?)";
+            const stringSql = "INSERT INTO acomodacoes(descricao, custoDiaria) VALUES(?,?)";
             const connection = await this.getConnection();
             await connection.execute(stringSql,
                 [
-                    id,
                     description,
                     dailyPrice
                 ]
