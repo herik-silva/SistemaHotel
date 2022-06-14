@@ -70,11 +70,14 @@ abstract class Validator {
         return true;
     }
 
+<<<<<<< HEAD
     /**
      * Método responsável por validar um CPF.
      * @param input CPF com os caracteres especiais (xxx.xxx.xxx-xx).
      * @returns Retorna TRUE caso o CPF seja válido e FALSE caso contrário.
      */
+=======
+>>>>>>> a9ac6d165d56225742f6336e3f6579e819c3846e
     public static validateCPF(input: string): boolean {
         const values = this.getValues(input, "CPF");
         console.log("CPF");

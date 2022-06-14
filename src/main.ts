@@ -1,18 +1,34 @@
-import Accommodation from "./Entity/Accommodation";
-import Guest from "./Entity/Guest";
-import AccommodationInteractor from "./Interactor/AccommodationInteractor";
-import Database from "./Interactor/Database";
-import GuestInteractor from "./Interactor/GuestInteractor";
-import Server from "./Server";
+import Validator from "./Entity/Validator";
 
-const database = new Database("mysql","root","Arvorebinaria123","3306","hotel_silveira");
-const server = new Server(3000);
+const isValid = Validator.validateCNPJ("14.572.457.0001-85.");
+console.log(isValid);
+if(isValid){
+    console.log("VALIDO");
+}
+else{
+    console.log("INVALIDO");
+}
+// import { readFileSync } from "fs";
+// var data = readFileSync(`${__dirname}/../CPFs.txt`).toString("utf-8");
+// while(data.includes("\r")){
+//     data = data.replace("\r", "");
+// }
+// const cpfList = data.split("\n");
 
-const guestInteractor = new GuestInteractor(database);
-const accommodationInteractor = new AccommodationInteractor(database);
+// const initialTime = Date.now();
 
-server.initServer();
+// var validCount = 0;
+// var invalidCount = 0;
+// for(let cpf of cpfList){
+//     const isValid = Validator.validateCPF(cpf);
+//     if(isValid){
+//         validCount++;
+//     }
+//     else{
+//         invalidCount++;
+//     }
+// }
 
-const accommodation = new Accommodation(0, "Solteiro", 100);
+// const duration = Date.now() - initialTime;
 
-accommodationInteractor.insert(accommodation.getId(), accommodation.getDescription(), accommodation.getDailyPrice());
+// console.log(`Validos: ${validCount}\n\nInvalidos: ${invalidCount}\n\nTempo gasto para análise de ${cpfList.length} CPFs -> ${duration}ms`);
