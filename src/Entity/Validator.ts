@@ -70,26 +70,22 @@ abstract class Validator {
         return true;
     }
 
-<<<<<<< HEAD
     /**
      * Método responsável por validar um CPF.
      * @param input CPF com os caracteres especiais (xxx.xxx.xxx-xx).
      * @returns Retorna TRUE caso o CPF seja válido e FALSE caso contrário.
      */
-=======
->>>>>>> a9ac6d165d56225742f6336e3f6579e819c3846e
     public static validateCPF(input: string): boolean {
         const values = this.getValues(input, "CPF");
-        console.log("CPF");
 
         if(this.checkNumbers(values)){
             var weight = 10;
             var skippedDigits = 2; // Digitos finais que serão ignorados na soma
             
             for(var currentDigit=1; currentDigit<=2; currentDigit++){
+                const length = values.length - skippedDigits;
                 var result: number;
                 var totalSum = 0;
-                var length = values.length - skippedDigits;
     
                 for(let index=0; index<length; index++){
                     totalSum += values[index] * (weight - index);
@@ -120,49 +116,51 @@ abstract class Validator {
         return false;
     }
 
+    /**
+     * Verifica se o CPNJ é válido.
+     * @param input CNPJ com os caracteres especiais.
+     * @returns TRUE se o CNPJ for válido e FALSE caso contrário.
+     */
     public static validateCNPJ(input: string): boolean {
         const values = this.getValues(input, "CNPJ");
-        console.log("CNPJ");
-        console.log(values);
 
         if(this.checkNumbers(values)){
             var skippedDigits = 2;
             
             for(var currentDigit=1; currentDigit<=2; currentDigit++){
+                const length = values.length - skippedDigits; // Quantidade de digitos pegos para soma
                 var result: number;
                 var rest: number;
-                var weight = 2;
+                var weight = 4 + currentDigit;
                 var totalSum = 0;
-                var length = values.length - skippedDigits;
 
-                for(let index=length-1; index>=0; index--){
-                    if(weight==10){
-                        weight = 2;
+                // Somatório da multiplicação com os pesos de cada digito
+                for(let index=0; index<length; index++){
+                    if(weight==1){
+                        weight = 9;
                     }
-
+                    
                     totalSum += values[index] * weight;
-                    weight++;
+                    weight--;
                 }
 
-                console.log(`Resultado: ${totalSum}`);
-                
-                if(currentDigit == 1){
-                    if(rest > 1){
-                        rest = totalSum % 11;
-                        result = 11 - rest;
-                    }
-                    else{
-                        result = 0;
-                    }
+                // Resto da divisão
+                rest = totalSum % 11;
+
+                // Caso o resto da divisão seja maior que 1
+                if(rest > 1){
+                    result = 11 - rest;
                 }
                 else{
-                    result = totalSum % 11;
+                    result = 0;
                 }
 
-
+                // Caso o resto da divisão seja diferente do digito atual o CNPJ é inválido
                 if(result != values[length]){
                     return false;
                 }
+
+                skippedDigits--;
             }
             
             return true;

@@ -1,7 +1,7 @@
 import Validator from "./Entity/Validator";
 
-const isValid = Validator.validateCNPJ("14.572.457.0001-85.");
-console.log(isValid);
+const isValid = Validator.validateCNPJ("54.689.233/0001-17");
+
 if(isValid){
     console.log("VALIDO");
 }
