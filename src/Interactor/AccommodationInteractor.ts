@@ -82,7 +82,6 @@ class AccommodationInteractor implements interactor {
 
     async insert(id: number, description: string, dailyPrice: number): Promise<boolean> {
         try{
-            const logInteractor = new LogInteractor("../../logs/log.txt");
             const stringSql = "INSERT INTO acomodacoes(descricao, custoDiaria) VALUES(?,?)";
             const connection = await this.getConnection();
             await connection.execute(stringSql,
@@ -92,7 +91,7 @@ class AccommodationInteractor implements interactor {
                 ]
             );
             connection.end();
-            logInteractor.insert("Acomodação Inserida", `A acomodação ${description} com a diária de R$ ${dailyPrice} foi cadastrada`);
+            LogInteractor.insert("Acomodação Inserida", `A acomodação ${description} com a diária de R$ ${dailyPrice} foi cadastrada`);
             return true;
         }
         catch(error){

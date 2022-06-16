@@ -7,45 +7,8 @@ import interactor from "./Interactor";
  * um arquivo .txt
  * @author Herik Aparecida
  */
-class LogInteractor implements interactor {
-    private logPath: string;
-
-    /**
-     * Construtor padrão para um objeto LogInteractor.
-     * @param path Caminho do arquivo a partir da pasta Interactor
-     * Exemplo: "../../logs/seuArquivo.txt"
-     */
-    constructor(path: string) {
-        this.logPath = `${__dirname}/${path}`;
-    }
-    
-    /**
-     * Método não precisa ser implementado
-    */
-    getConnection(): any {
-        throw "Não implementado";
-    }
-    
-    /**
-     * Método não precisa ser implementado
-     */
-    delete() {
-        throw "Não implementado";
-    }
-
-    /**
-     * Método não precisa ser implementado
-     */
-    find() {
-        throw "Não Implementado";
-    }
-
-    /**
-     * Método não precisa ser implementado
-     */
-    findByPk() {
-        throw "Não Implementado";
-    }
+abstract class LogInteractor {
+    private static logPath: string = `${__dirname}/../../logs/log.txt`;
 
     /**
      * Registra um novo log no sistema.
@@ -53,7 +16,7 @@ class LogInteractor implements interactor {
      * @param description Descrição do log, Exemplo: "O funcionário Fulano 
      * foi cadastrado"
      */
-    insert(title: string, description: string): void {
+    public static insert(title: string, description: string): void {
         if(title.length>0 && description.length>0){
             const newLog = new Log(title, description);
             writeFileSync(this.logPath, newLog.getLog(),{flag: "a+"});
@@ -63,12 +26,6 @@ class LogInteractor implements interactor {
         }
     }
 
-    /**
-     * Método não precisa ser implementado
-     */
-    update() {
-        throw "Não Implementado";
-    }
 }
 
 export default LogInteractor;
