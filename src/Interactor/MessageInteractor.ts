@@ -99,11 +99,42 @@ class MessageInteractor implements interactor {
 
                 return message;
             }
+        }catch(error){
+            throw error;
         }
     }
 
-    findByPk(id: number) {
-        
+    async findByPk(senderId: number): Promise<Array<Message>> {
+        try{
+            const messageList = new Array<Message>();
+            const connection = await this.getConnection();
+            const stringSql = "SELECT * FROM nome_tabela WHERE id = ?";
+
+            const row = connection.query(stringSql, senderId);
+            connection.end();
+
+            if(row[0][0]){
+                var index=0;
+                const messagesText = row[0];
+
+                while(messagesText[index]){
+                    const selectedMessage = messagesText[index];
+                    const message = new Message(
+                        selectedMessage.assunto,
+                        selectedMessage.conteudo,
+                        selectedMessage.idRemetente,
+                        selectedMessage.idDestinatario
+                    );
+
+                    messageList.push(message);
+                    index++;
+                }
+            }
+
+            return messageList;
+        }catch(error){
+            throw error;
+        }
     }
 }
 
