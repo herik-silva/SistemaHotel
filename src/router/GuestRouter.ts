@@ -1,11 +1,16 @@
 import { Request, Response } from "express";
+import Status from "../Entity/Status";
 import Database from "../Interactor/Database";
 import GuestInteractor from "../Interactor/GuestInteractor";
 import Router from "./Router";
 
 /**
  * Router responsável por receber todas as requisições
- * vindo da rota guest.
+ * vindo da rota guest e encaminhar os dados para camada
+ * Interactor.
+ * 
+ * Consulte a interface Router para saber mais sobre
+ * cada um dos métodos.
  * 
  * @author Herik Aparecida
  */
@@ -19,41 +24,64 @@ class GuestRouter implements Router {
     async get(request: Request, response: Response) {
         const guestId = parseInt(request.body.id);
         const guest = await this.guestInteractor.findByPk(guestId);
-        const jsonError = {error: "Hospede não encontrado!"};
 
         if(guest){
-            return response.json(guest);
+            return response.status(Status.OK.code).json(guest);
         }
         
-        return response.json(jsonError);
+        return response.status(Status.NOT_FOUND.code).json(Status.NOT_FOUND);
     }
 
-    post(request: Request, response: Response) {
+    async post(request: Request, response: Response) {
         const guestData = request.body;
-        console.log(guestData);
 
-        const hasInserted = this.guestInteractor.insert(
-            0,
+        const hasInserted = await this.guestInteractor.insert(
             guestData.name,
             guestData.cpf,
             guestData.photo,
             guestData.contactPhone,
             guestData.city,
             guestData.companyId,
-            undefined
         )
 
         if(hasInserted){
-            return response.status(200).json({status: 200});
+            return response.status(Status.OK.code).json(Status.OK);
         }
     }
 
-    put(request: Request, response: Response) {
-        throw new Error("Method not implemented.");
+    async put(request: Request, response: Response) {
+        const guestData = request.body;
+
+        console.log(guestData);
+
+        const hasUpdated = await this.guestInteractor.update(
+            guestData.id,
+            guestData.name,
+            guestData.cpf,
+            guestData.photo,
+            guestData.contactPhone,
+            guestData.city,
+            guestData.companyId,
+            guestData.lastAcommodationId
+        );
+
+        if(hasUpdated){
+            return response.status(Status.OK.code).json(Status.OK);
+        }
+
+        return response.status(Status.NOT_FOUND.code).json(Status.NOT_FOUND);
     }
 
-    delete(request: Request, response: Response) {
-        throw new Error("Method not implemented.");
+    async delete(request: Request, response: Response) {
+        const guestId = parseInt(request.body.id);
+
+        const hasDeleted = await this.guestInteractor.delete(guestId);
+
+        if(hasDeleted){
+            return response.status(Status.OK.code).json(Status.OK);
+        }
+
+        return response.status(Status.NOT_FOUND.code).json(Status.NOT_FOUND);
     }
 }
 

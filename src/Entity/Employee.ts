@@ -9,14 +9,14 @@ import People from "./People";
  */
 class Employee extends People {
     private turn: string;
-    private currentWage: number;
+    private salary: number;
     private password: string;
     private responsibilityId: number;
 
-    constructor(id: number, name: string, cpf: string, contactPhone: Array<string> = [], photo: string = undefined,turn: string, currentWage: number, password: string, responsabilityId: number){
+    constructor(id: number, name: string, cpf: string, contactPhone: Array<string> = [], photo: string = undefined,turn: string, salary: number, password: string, responsabilityId: number){
         super(id,name,cpf,contactPhone,photo);
         this.turn = turn;
-        this.currentWage = currentWage;
+        this.salary = salary;
         this.password = password;
         this.responsibilityId = responsabilityId;
     }
@@ -25,8 +25,8 @@ class Employee extends People {
         return this.turn;
     }
 
-    getCurrentWage(): number {
-        return this.currentWage;
+    getsalary(): number {
+        return this.salary;
     }
 
     getPassword(): string {
@@ -41,8 +41,8 @@ class Employee extends People {
         this.turn = newTurn;
     }
 
-    setCurrentWage(newValue: number): void {
-        this.currentWage = newValue;
+    setsalary(newValue: number): void {
+        this.salary = newValue;
     }
 
     setPassword(newPassword: string): void {

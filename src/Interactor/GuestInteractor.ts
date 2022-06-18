@@ -96,14 +96,13 @@ class GuestInteractor implements interactor {
      * @param lastIdAccommodation 
      * @returns 
      */
-    async insert(id:number, name:string, cpf:string, photo: string, contactPhone:Array<string>, city:string, companyId: number, lastIdAccommodation: number): Promise<boolean> {
+    async insert(name:string, cpf:string, photo: string, contactPhone:Array<string>, city:string, companyId: number): Promise<boolean> {
         try{
             const stringSql = "INSERT INTO hospedes VALUES(?,?,?,?,?,?,?,?,?)";
 
             const connection = await this.getConnection();
             await connection.execute(stringSql,
                 [
-                    id,
                     cpf,
                     name,
                     photo,
@@ -111,7 +110,6 @@ class GuestInteractor implements interactor {
                     contactPhone[0],
                     contactPhone[1],
                     companyId,
-                    lastIdAccommodation
                 ]
             );
             connection.end();

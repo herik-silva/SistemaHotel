@@ -15,6 +15,8 @@ router.get("/", (request: Request, response: Response) => {
 
 router.get("/guest", guestRouter.get);
 router.post("/guest", upload.none() ,guestRouter.post);
+router.put("/guest", upload.none(), guestRouter.put);
+router.delete("/guest", upload.none(), guestRouter.delete);
 
 // router.get("/employee", async (request: Request, response: Response) => {
 //     const employeeId = parseInt(request.body.id);
