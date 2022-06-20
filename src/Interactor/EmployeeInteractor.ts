@@ -89,7 +89,6 @@ class EmployeeInteractor implements interactor {
 
     /**
      * Insere um funcionario no banco de dados
-     * @param id 
      * @param name 
      * @param cpf 
      * @param password 
@@ -100,14 +99,13 @@ class EmployeeInteractor implements interactor {
      * @param responsabilityId 
      * @returns 
      */
-    async insert(id:number, name:string, cpf:string, password: string, photo: string, turn: string, contactPhone:Array<string>, currentWage: number, responsabilityId: number): Promise<boolean> {
+    async insert(name:string, cpf:string, password: string, photo: string, turn: string, contactPhone:Array<string>, currentWage: number, responsabilityId: number): Promise<boolean> {
         try{
             const stringSql = `INSERT INTO funcionarios VALUES(?,?,?,?,?,?,?,?,?,?)`;
             
             const connection = await this.getConnection();
             await connection.execute(stringSql,
                 [
-                    id,
                     cpf,
                     name,
                     password,

@@ -1,10 +1,12 @@
 import { Router, Request, Response } from "express";
 import multer from "multer";
 import Database from "../Interactor/Database";
+import EmployeeRouter from "./EmployeeRouter";
 import GuestRouter from "./GuestRouter";
 
 const database = new Database("mysql","root","Arvorebinaria123","3306","hotel_silveira");
 const guestRouter = new GuestRouter(database);
+const employeeRouter = new EmployeeRouter(database);
 
 const router = Router();
 const upload = multer();
@@ -13,10 +15,17 @@ router.get("/", (request: Request, response: Response) => {
     return response.sendFile("/index.html");
 });
 
-router.get("/guest", guestRouter.get);
-router.post("/guest", upload.none() ,guestRouter.post);
+// Guest Route
+router.get("/guest", upload.none(), guestRouter.get);
+router.post("/guest", upload.none() , guestRouter.post);
 router.put("/guest", upload.none(), guestRouter.put);
 router.delete("/guest", upload.none(), guestRouter.delete);
+
+// Employee Route
+router.get("/employee", upload.none(), employeeRouter.get);
+router.post("/employee", upload.none(), employeeRouter.post);
+router.put("/employee", upload.none(),employeeRouter.put);
+router.delete("/employee", upload.none(),employeeRouter.delete);
 
 // router.get("/employee", async (request: Request, response: Response) => {
 //     const employeeId = parseInt(request.body.id);

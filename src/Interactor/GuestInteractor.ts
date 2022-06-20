@@ -19,13 +19,13 @@ class GuestInteractor implements interactor {
      * @param name 
      * @returns 
      */
-    async find(name: string): Promise<Array<Guest>> {
-        const stringSql = `SELECT * FROM hospedes WHERE nome LIKE "${name}%"`;
+    async find(key: string, value: string): Promise<Array<Guest>> {
+        const stringSql = `SELECT * FROM hospedes WHERE ? LIKE ?`;
 
         const connection = await this.getConnection();
         const guestsFound = new Array<Guest>();
 
-        const rows = await connection.query(stringSql);
+        const rows = await connection.query(stringSql, [key, value]);
         connection.end();
 
         // Verifica se algum hospede foi encontrado!
@@ -86,7 +86,6 @@ class GuestInteractor implements interactor {
 
     /**
      * Insere um hospede no banco de dados
-     * @param id 
      * @param name 
      * @param cpf 
      * @param photo 

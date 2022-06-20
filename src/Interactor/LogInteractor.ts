@@ -1,6 +1,5 @@
 import { writeFileSync } from "fs";
 import Log from "../Entity/Log";
-import interactor from "./Interactor";
 
 /**
  * Classe que realiza interação com logs, registrando-os em
