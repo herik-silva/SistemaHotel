@@ -2,6 +2,7 @@ import { Router, Request, Response } from "express";
 import multer from "multer";
 import Database from "../Interactor/Database";
 import AccommodationRouter from "./AccommodationRouter";
+import CompanyRouter from "./CompanyRouter";
 import EmployeeRouter from "./EmployeeRouter";
 import GuestRouter from "./GuestRouter";
 
@@ -9,6 +10,7 @@ const database = new Database("mysql","root","Arvorebinaria123","3306","hotel_si
 const guestRouter = new GuestRouter(database);
 const employeeRouter = new EmployeeRouter(database);
 const accommodationRouter = new AccommodationRouter(database);
+const companyRouter = new CompanyRouter(database);
 
 const router = Router();
 const upload = multer();
@@ -34,6 +36,12 @@ router.get("/accommodation", upload.none(), accommodationRouter.get);
 router.post("/accommodation", upload.none(), accommodationRouter.post);
 router.put("/accommodation", upload.none(),accommodationRouter.put);
 router.delete("/accommodation", upload.none(),accommodationRouter.delete);
+
+// Accommodation Route
+router.get("/company", upload.none(), companyRouter.get);
+router.post("/company", upload.none(), companyRouter.post);
+router.put("/company", upload.none(),companyRouter.put);
+router.delete("/company", upload.none(),companyRouter.delete);
 
 // router.get("/reserve/:id", async (request: Request, response: Response) => {
 //     const reserveId = parseInt(request.params.id);
