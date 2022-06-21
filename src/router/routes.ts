@@ -1,12 +1,14 @@
 import { Router, Request, Response } from "express";
 import multer from "multer";
 import Database from "../Interactor/Database";
+import AccommodationRouter from "./AccommodationRouter";
 import EmployeeRouter from "./EmployeeRouter";
 import GuestRouter from "./GuestRouter";
 
 const database = new Database("mysql","root","Arvorebinaria123","3306","hotel_silveira");
 const guestRouter = new GuestRouter(database);
 const employeeRouter = new EmployeeRouter(database);
+const accommodationRouter = new AccommodationRouter(database);
 
 const router = Router();
 const upload = multer();
@@ -27,29 +29,11 @@ router.post("/employee", upload.none(), employeeRouter.post);
 router.put("/employee", upload.none(),employeeRouter.put);
 router.delete("/employee", upload.none(),employeeRouter.delete);
 
-// router.get("/employee", async (request: Request, response: Response) => {
-//     const employeeId = parseInt(request.body.id);
-//     const employee = await employeeInteractor.findByPk(employeeId);
-
-//     if(employee){
-//         return response.json(employee);
-//     }
-//     else{
-//         return response.json({erro: "Funcionario nao encontrado"});
-//     }
-// });
-
-// router.get("/accommodation/:id", async (request: Request, response: Response) => {
-//     const accommodationId = parseInt(request.params.id);
-//     const accommodation = await accommodationInteractor.findByPk(accommodationId);
-
-//     if(accommodation){
-//         return response.json(accommodation);
-//     }
-//     else{
-//         return response.status(404).json({erro: "Acomodacao nao encontrada"});
-//     }
-// });
+// Accommodation Route
+router.get("/accommodation", upload.none(), accommodationRouter.get);
+router.post("/accommodation", upload.none(), accommodationRouter.post);
+router.put("/accommodation", upload.none(),accommodationRouter.put);
+router.delete("/accommodation", upload.none(),accommodationRouter.delete);
 
 // router.get("/reserve/:id", async (request: Request, response: Response) => {
 //     const reserveId = parseInt(request.params.id);

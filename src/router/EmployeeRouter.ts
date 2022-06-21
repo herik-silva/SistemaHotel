@@ -1,10 +1,19 @@
 import { Request, Response } from "express";
-import Employee from "../Entity/Employee";
 import Status from "../Entity/Status";
 import Database from "../Interactor/Database";
 import EmployeeInteractor from "../Interactor/EmployeeInteractor";
 import Router from "./Router";
 
+/**
+ * Router responsável por receber todas as requisições
+ * vindo da rota employee e encaminhar os dados para camada
+ * Interactor.
+ * 
+ * Consulte a interface Router para saber mais sobre
+ * cada um dos métodos.
+ * 
+ * @author Herik Aparecida
+ */
 class EmployeeRouter implements Router {
     private employeeInteractor: EmployeeInteractor;
 

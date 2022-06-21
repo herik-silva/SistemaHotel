@@ -24,7 +24,6 @@ abstract class LogInteractor {
             throw "Strings vazias não são válidas.";
         }
     }
-
 }
 
 export default LogInteractor;

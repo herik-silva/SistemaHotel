@@ -80,7 +80,7 @@ class AccommodationInteractor implements interactor {
         }
     }
 
-    async insert(id: number, description: string, dailyPrice: number): Promise<boolean> {
+    async insert(description: string, dailyPrice: number): Promise<boolean> {
         try{
             const stringSql = "INSERT INTO acomodacoes(descricao, custoDiaria) VALUES(?,?)";
             const connection = await this.getConnection();
