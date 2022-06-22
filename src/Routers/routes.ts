@@ -6,6 +6,7 @@ import CompanyRouter from "./CompanyRouter";
 import EmployeeRouter from "./EmployeeRouter";
 import GuestRouter from "./GuestRouter";
 import MessageRouter from "./MessageRouter";
+import ResponsabilityRouter from "./Responsability";
 import RoomRouter from "./RoomRouter";
 
 const database = new Database("mysql","root","Arvorebinaria123","3306","hotel_silveira");
@@ -15,6 +16,7 @@ const accommodationRouter = new AccommodationRouter(database);
 const companyRouter = new CompanyRouter(database);
 const messageRouter = new MessageRouter(database);
 const roomRouter = new RoomRouter(database);
+const responsabilityRouter = new ResponsabilityRouter(database);
 
 const router = Router();
 const upload = multer();
@@ -65,6 +67,12 @@ router.post("/room", upload.none(), roomRouter.post);
 router.put("/room", upload.none(),roomRouter.put);
 router.delete("/room", upload.none(),roomRouter.delete);
 
+// Responsability Route
+router.get("/responsability", upload.none(), responsabilityRouter.get);
+router.post("/responsability", upload.none(), responsabilityRouter.post);
+router.put("/responsability", upload.none(),responsabilityRouter.put);
+router.delete("/responsability", upload.none(),responsabilityRouter.delete);
+
 // router.get("/reserve/:id", async (request: Request, response: Response) => {
 //     const reserveId = parseInt(request.params.id);
 //     const reserve = await reserveInteractor.findByPk(reserveId);
@@ -84,18 +92,6 @@ router.delete("/room", upload.none(),roomRouter.delete);
 //     }
 //     else{
 //         return response.status(404).json({erro: "Reserva nao encontrada"});
-//     }
-// });
-
-// router.get("/room/:id", async (request: Request, response: Response) => {
-//     const roomId = parseInt(request.params.id);
-//     const room = await roomInteractor.findByPk(roomId);
-
-//     if(room){
-//         return response.status(200).json(room);
-//     }
-//     else{
-//         return response.status(404).json({erro: "Quarto nao encontrado"});
 //     }
 // });
 
