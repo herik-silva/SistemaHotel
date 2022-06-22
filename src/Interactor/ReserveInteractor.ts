@@ -83,14 +83,13 @@ class ReserveInteractor implements Interactor {
         }
     }
 
-    async insert(id: number, entryDate: Date, checkoutDate: Date, amountPeople: number, roomId: number, guestId: number, employeeId: number, status: boolean, checkinAmount: number, payment: number): Promise<boolean> {
+    async insert(entryDate: Date, checkoutDate: Date, amountPeople: number, roomId: number, guestId: number, employeeId: number, status: boolean, checkinAmount: number, payment: number): Promise<boolean> {
         try{
             const stringSql = "INSERT INTO reservas VALUES(?,?,?,?,?,?,?,?,?,?)";
 
             const connection = await this.getConnection();
             await connection.execute(stringSql,
                 [
-                    id,
                     entryDate,
                     checkoutDate,
                     payment,

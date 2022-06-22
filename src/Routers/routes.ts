@@ -6,10 +6,12 @@ import CompanyRouter from "./CompanyRouter";
 import EmployeeRouter from "./EmployeeRouter";
 import GuestRouter from "./GuestRouter";
 import MessageRouter from "./MessageRouter";
+import ReserveRouter from "./ReserveRouter";
 import ResponsabilityRouter from "./Responsability";
 import RoomRouter from "./RoomRouter";
 
 const database = new Database("mysql","root","Arvorebinaria123","3306","hotel_silveira");
+
 const guestRouter = new GuestRouter(database);
 const employeeRouter = new EmployeeRouter(database);
 const accommodationRouter = new AccommodationRouter(database);
@@ -17,6 +19,7 @@ const companyRouter = new CompanyRouter(database);
 const messageRouter = new MessageRouter(database);
 const roomRouter = new RoomRouter(database);
 const responsabilityRouter = new ResponsabilityRouter(database);
+const reserveRouter = new ReserveRouter(database);
 
 const router = Router();
 const upload = multer();
@@ -73,26 +76,10 @@ router.post("/responsability", upload.none(), responsabilityRouter.post);
 router.put("/responsability", upload.none(),responsabilityRouter.put);
 router.delete("/responsability", upload.none(),responsabilityRouter.delete);
 
-// router.get("/reserve/:id", async (request: Request, response: Response) => {
-//     const reserveId = parseInt(request.params.id);
-//     const reserve = await reserveInteractor.findByPk(reserveId);
-//     const guest = await guestInteractor.findByPk(reserve.getGuestId());
-//     const room = await roomInteractor.findByPk(reserve.getroomIdNumber());
-//     const employee = await employeeInteractor.findByPk(reserve.getEmployeeId());
-
-//     const data = {
-//         reserve: reserve,
-//         guest: guest,
-//         room: room,
-//         employee: employee
-//     }
-
-//     if(reserve){
-//         return response.status(200).json(data);
-//     }
-//     else{
-//         return response.status(404).json({erro: "Reserva nao encontrada"});
-//     }
-// });
+// Responsability Route
+router.get("/reserve", upload.none(), reserveRouter.get);
+router.post("/reserve", upload.none(), reserveRouter.post);
+router.put("/reserve", upload.none(),reserveRouter.put);
+router.delete("/reserve", upload.none(),reserveRouter.delete);
 
 export default router;
