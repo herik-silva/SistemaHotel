@@ -1,7 +1,6 @@
 import express, { Express } from "express";
-import router from "./router/routes";
+import router from "./Routers/routes";
 import cors from "cors";
-import bodyParser from "body-parser";
 
 class Server {
     private port: number;
@@ -14,7 +13,6 @@ class Server {
 
     initServer(port: number = this.port): void {
         this.app.use(express.static(__dirname+"/pages"));
-        this.app.use(bodyParser.json());
         this.app.use(router);
         this.app.use(cors);
         

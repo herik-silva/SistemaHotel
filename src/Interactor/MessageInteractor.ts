@@ -43,7 +43,7 @@ class MessageInteractor implements interactor {
         }
     }
 
-    async update(id: number, subject: string, content: string) {
+    async update(id: number, subject: string, content: string): Promise<boolean> {
         try{
             const connection = await this.getConnection();
             const logTitle = "Recado Atualizado";
@@ -59,12 +59,14 @@ class MessageInteractor implements interactor {
 
             connection.end();
             LogInteractor.insert(logTitle, logDescription);
+
+            return true;
         }catch(error){
             throw error;
         }
     }
 
-    async delete(id: number) {
+    async delete(id: number): Promise<boolean> {
         try{
             const connection = await this.getConnection();
             const logTitle = "Recado Deletado";
@@ -75,6 +77,8 @@ class MessageInteractor implements interactor {
 
             connection.end();
             LogInteractor.insert(logTitle, logDescription);
+
+            return true;
         }catch(error){
             throw error;
         }

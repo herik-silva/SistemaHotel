@@ -73,14 +73,13 @@ class ResponsabilityInteractor implements interactor {
         }
     }
 
-    async insert(id: number, name: string, acessLevel: number): Promise<boolean> {
+    async insert(name: string, acessLevel: number): Promise<boolean> {
         try{
             const stringSql = "INSERT INTO cargos VALUES(?,?,?)";
 
             const connection = await this.getConnection();
             await connection.execute(stringSql,
                 [
-                    id,
                     name,
                     acessLevel
                 ]

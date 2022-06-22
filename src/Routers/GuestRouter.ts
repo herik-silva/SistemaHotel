@@ -36,6 +36,8 @@ class GuestRouter implements Router {
     async post(request: Request, response: Response) {
         const guestData = request.body;
 
+        console.log(guestData);
+
         const hasInserted = await this.guestInteractor.insert(
             guestData.name,
             guestData.cpf,
@@ -45,7 +47,7 @@ class GuestRouter implements Router {
             guestData.companyId,
         )
 
-        if(hasInserted){
+        if(true){
             return response.status(Status.OK.code).json(Status.OK);
         }
     }

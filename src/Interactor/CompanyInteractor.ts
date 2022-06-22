@@ -14,14 +14,13 @@ class CompanyInteractor implements  Interactor {
         return await createConnection(`${this.database.dialect}://${this.database.user}:${this.database.key}@localhost:${this.database.port}/${this.database.database}`);
     }
 
-    async insert(id: number, cnpj: string, email: string, name: string, contactPhone: string): Promise<boolean> {
+    async insert(cnpj: string, email: string, name: string, contactPhone: string): Promise<boolean> {
         try{
             const stringSql = "INSERT INTO empresas VALUES(?,?,?,?,?)";
 
             const connection = await this.getConnection();
             await connection.execute(stringSql,
                 [
-                    id,
                     cnpj,
                     email,
                     name,
