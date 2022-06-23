@@ -2,6 +2,7 @@ import Interactor from "./Interactor";
 import Database from "./Database";
 import Company from "../Entity/Company";
 import { createConnection, Connection } from "mysql2/promise";
+import LogInteractor from "./LogInteractor";
 
 class CompanyInteractor implements  Interactor {
     private database: Database;
@@ -16,9 +17,11 @@ class CompanyInteractor implements  Interactor {
 
     async insert(cnpj: string, email: string, name: string, contactPhone: string): Promise<boolean> {
         try{
+            const logTitle = "Empresa Cadastrada!";
+            const logDescription = `A empresa ${name} foi cadastrada!`;
             const stringSql = "INSERT INTO empresas VALUES(?,?,?,?,?)";
-
             const connection = await this.getConnection();
+
             await connection.execute(stringSql,
                 [
                     cnpj,
@@ -28,6 +31,7 @@ class CompanyInteractor implements  Interactor {
                 ]
             );
             connection.end();
+            LogInteractor.insert(logTitle, logDescription);
 
             return true;
         }
@@ -97,9 +101,11 @@ class CompanyInteractor implements  Interactor {
 
     async update(id: number, cnpj: string, name: string, email:string, contactPhone: string): Promise<boolean> {
         try{
+            const logTitle = "Empresa Atualizada!";
+            const logDescription = `A empresa de ID {id} - {name} foi atualizada!`;
             const stringSql = "UPDATE empresas SET CNPJ = ?, nome = ?, email = ?, telefoneContato = ? WHERE id = ?";
-
             const connection = await this.getConnection();
+
             await connection.execute(stringSql, 
                 [
                     cnpj,
@@ -110,6 +116,7 @@ class CompanyInteractor implements  Interactor {
                 ]
             );
             connection.end();
+            LogInteractor.insert(logTitle, logDescription);
 
             return true;
         }
@@ -120,12 +127,16 @@ class CompanyInteractor implements  Interactor {
 
     async delete(id: number): Promise<boolean> {
         try{
+            const logTitle = "Empresa Deletada!";
+            const logDescription = `A empresa de ID ${id} foi removida.`
             const stringSql = "DELETE FROM empresas WHERE id = ?";
-            
             const connection = await this.getConnection();
+            
             await connection.execute(stringSql, id);
             connection.end();
 
+            LogInteractor.insert(logTitle, logDescription);
+            
             return true;
         }
         catch(error){

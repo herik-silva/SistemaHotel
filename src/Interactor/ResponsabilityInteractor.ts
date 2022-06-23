@@ -2,6 +2,7 @@ import Database from "./Database";
 import { createConnection, Connection } from "mysql2/promise";
 import interactor from "./Interactor";
 import Responsability from "../Entity/Responsibility";
+import LogInteractor from "./LogInteractor";
 
 class ResponsabilityInteractor implements interactor {
     private database: Database;
@@ -75,9 +76,11 @@ class ResponsabilityInteractor implements interactor {
 
     async insert(name: string, acessLevel: number): Promise<boolean> {
         try{
+            const logTitle = "Cargo Cadastrado";
+            const logDescription = `O Cargo ${name} com nível de acesso ${acessLevel} foi cadastrado.`;
             const stringSql = "INSERT INTO cargos VALUES(?,?,?)";
-
             const connection = await this.getConnection();
+
             await connection.execute(stringSql,
                 [
                     name,
@@ -85,6 +88,7 @@ class ResponsabilityInteractor implements interactor {
                 ]
             );
             connection.end();
+            LogInteractor.insert(logTitle, logDescription);
 
             return true;
         }
@@ -96,9 +100,11 @@ class ResponsabilityInteractor implements interactor {
 
     async update(id: number, name: string, acessLevel: number): Promise<boolean> {
         try{
+            const logTitle = "Cargo Atualizado!";
+            const logDescription = `O Cargo de ID ${id} foi atualizado`;
             const stringSql = "UPDATE cargos SET nome = ?, nivelAcesso = ? WHERE id = ?";
-
             const connection = await this.getConnection();
+
             await connection.execute(stringSql,
                 [
                     name,
@@ -107,6 +113,7 @@ class ResponsabilityInteractor implements interactor {
                 ]
             );
             connection.end();
+            LogInteractor.insert(logTitle, logDescription);
 
             return true;
         }
@@ -118,12 +125,15 @@ class ResponsabilityInteractor implements interactor {
 
     async delete(id: number): Promise<boolean> {
         try{
+            const logTitle = "Cargo Deletado!";
+            const logDescription = `O cargo de ID ${id} foi removido.`
             const stringSql = "DELETE FROM cargos WHERE id = ?";
-
             const connection = await this.getConnection();
+
             await connection.execute(stringSql, [id]);
             connection.end();
-
+            LogInteractor.insert(logTitle, logDescription);
+            
             return true;
         }
         catch(error){

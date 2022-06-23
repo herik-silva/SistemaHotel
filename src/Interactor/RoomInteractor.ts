@@ -2,6 +2,7 @@ import Database from "./Database";
 import interactor from "./Interactor";
 import { createConnection, Connection } from "mysql2/promise";
 import Room from "../Entity/Room";
+import LogInteractor from "./LogInteractor";
 
 
 class RoomInteractor implements interactor {
@@ -17,9 +18,11 @@ class RoomInteractor implements interactor {
 
     async insert(number: number, photo: string, status: string, accommodation: number): Promise<boolean> {
         try{
+            const logTitle = "Quarto Cadastrado!";
+            const logDescription= `O quarto número ${number} foi cadastrado.`;
             const stringSql = "INSERT INTO quartos VALUES(?,?,?,?)";
-
             const connection = await this.getConnection();
+
             await connection.execute(stringSql,
                 [
                     number,
@@ -29,6 +32,7 @@ class RoomInteractor implements interactor {
                 ]
             );
             connection.end();
+            LogInteractor.insert(logTitle, logDescription);
 
             return true;
         }
@@ -99,9 +103,11 @@ class RoomInteractor implements interactor {
 
     async update(number: number, photo: string, status: string, accommodation: number): Promise<boolean> {
         try{
+            const logTitle = "Quarto Atualizado!";
+            const logDescription = `O quarto ${number} foi atualizado.`;
             const stringSql = "UPDATE quartos SET foto = ?, statusAtual = ?, idAcomodacao = ? WHERE numero = ?";
-
             const connection = await this.getConnection();
+
             await connection.execute(stringSql,
                 [
                     photo,
@@ -111,6 +117,7 @@ class RoomInteractor implements interactor {
                 ]
             );
             connection.end();
+            LogInteractor.insert(logTitle, logDescription);
 
             return true;
         }
@@ -121,11 +128,14 @@ class RoomInteractor implements interactor {
 
     async delete(id: number): Promise<boolean> {
         try{
+            const logTitle = "Quarto Removido!";
+            const logDescription = `O quarto ${id} foi removido!`;
             const stringSql = "DELETE FROM quartos WHERE numero = ?";
-            
             const connection = await this.getConnection();
+            
             await connection.execute(stringSql, [id]);
             connection.end();
+            LogInteractor.insert(logTitle, logDescription);
 
             return true;
         }catch(error){
