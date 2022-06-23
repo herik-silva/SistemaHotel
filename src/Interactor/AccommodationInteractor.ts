@@ -82,8 +82,11 @@ class AccommodationInteractor implements interactor {
 
     async insert(description: string, dailyPrice: number): Promise<boolean> {
         try{
+            const logTitle = "Acomodação Cadastrada!";
+            const logDescription = `A acomodação ${description} com a diária de R$ ${dailyPrice} foi cadastrada.`
             const stringSql = "INSERT INTO acomodacoes(descricao, custoDiaria) VALUES(?,?)";
             const connection = await this.getConnection();
+            
             await connection.execute(stringSql,
                 [
                     description,
@@ -91,7 +94,8 @@ class AccommodationInteractor implements interactor {
                 ]
             );
             connection.end();
-            LogInteractor.insert("Acomodação Inserida", `A acomodação ${description} com a diária de R$ ${dailyPrice} foi cadastrada`);
+            LogInteractor.insert(logTitle, logDescription);
+
             return true;
         }
         catch(error){
@@ -102,6 +106,8 @@ class AccommodationInteractor implements interactor {
 
     async update(id: number, description: string, dailyPrice: number): Promise<boolean> {
         try{
+            const logTitle = "Acomodação Atualizada!";
+            const logDescription = `A acomodação de ID ${id} foi atualizada.`;
             const stringSql = "UPDATE acomodacoes SET descricao = ?, custoDiaria = ? WHERE id = ?";
 
             const connection = await this.getConnection();
@@ -113,7 +119,8 @@ class AccommodationInteractor implements interactor {
                 ]
             );
             connection.end();
-
+            LogInteractor.insert(logTitle, logDescription);
+            
             return true;
         }
         catch(error){
@@ -124,11 +131,14 @@ class AccommodationInteractor implements interactor {
 
     async delete(id: number): Promise<boolean> {
         try{
+            const logTitle = "Acomodação Removida!";
+            const logDescription = `A acomodação de ID ${id} foi removida.`;
             const stringSql = "DELETE FROM acomodacoes WHERE id = ?";
-
             const connection = await this.getConnection();
+            
             await connection.execute(stringSql, [id]);
             connection.end();
+            LogInteractor.insert(logTitle, logDescription);
 
             return true;
         }

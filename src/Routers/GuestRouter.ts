@@ -36,8 +36,6 @@ class GuestRouter implements Router {
     async post(request: Request, response: Response) {
         const guestData = request.body;
 
-        console.log(guestData);
-
         const hasInserted = await this.guestInteractor.insert(
             guestData.name,
             guestData.cpf,
@@ -54,8 +52,6 @@ class GuestRouter implements Router {
 
     async put(request: Request, response: Response) {
         const guestData = request.body;
-
-        console.log(guestData);
 
         const hasUpdated = await this.guestInteractor.update(
             guestData.id,

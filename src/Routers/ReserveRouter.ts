@@ -4,6 +4,16 @@ import Database from "../Interactor/Database";
 import ReserveInteractor from "../Interactor/ReserveInteractor";
 import Router from "./Router";
 
+/**
+ * Router responsável por receber todas as requisições
+ * vindo da rota reserve e encaminhar os dados para camada
+ * Interactor.
+ * 
+ * Consulte a interface Router para saber mais sobre
+ * cada um dos métodos.
+ * 
+ * @author Herik Aparecida
+ */
 class ReserveRouter implements Router {
     private reserveInteractor: ReserveInteractor;
 

@@ -2,6 +2,7 @@ import Guest from "../Entity/Guest";
 import interactor from "./Interactor";
 import { createConnection, Connection } from "mysql2/promise";
 import Database from "./Database";
+import LogInteractor from "./LogInteractor";
 
 class GuestInteractor implements interactor {
     private database: Database;
@@ -15,8 +16,9 @@ class GuestInteractor implements interactor {
     }
 
     /**
-     * Realiza a busca de um hospede pelo seu nome.
-     * @param name 
+     * Realiza a busca de um hospede pelo campo desejado.
+     * @param key Campo que será utilizado na busca.
+     * @param value Valor que será pesquisado. 
      * @returns 
      */
     async find(key: string, value: string): Promise<Array<Guest>> {
@@ -92,11 +94,12 @@ class GuestInteractor implements interactor {
      * @param contactPhone 
      * @param city 
      * @param companyId 
-     * @param lastIdAccommodation 
-     * @returns 
+     * @returns Retorna TRUE se for bem sucedido
      */
     async insert(name:string, cpf:string, photo: string, contactPhone:Array<string>, city:string, companyId: number): Promise<boolean> {
         try{
+            const logTitle = "Hospede Cadastrado";
+            const logDescription = `O Hospede ${name} foi cadastrado!`;
             const stringSql = "INSERT INTO hospedes VALUES(?,?,?,?,?,?,?,?,?)";
 
             const connection = await this.getConnection();
@@ -112,6 +115,7 @@ class GuestInteractor implements interactor {
                 ]
             );
             connection.end();
+            LogInteractor.insert(logTitle, logDescription);
  
             return true;
         }catch(error){
@@ -135,6 +139,8 @@ class GuestInteractor implements interactor {
      */
     async update(id:number, name:string, cpf:string, photo: string, contactPhone:Array<string>, city:string, companyId: number, lastIdAccommodation: number): Promise<any> {
         try{
+            const logTitle = "Hospede Atualizado!";
+            const logDescription = `O Hospede de ID ${id} foi atualizado.`;
             const stringSql = "UPDATE hospedes SET CPF = ?, nome = ?, foto = ?, cidade = ?, telefoneContatoA = ?, telefoneContatoB = ?, idEmpresa = ?, idUltimaAcomodacao = ? WHERE id = ?;";
 
             const connection = await this.getConnection();
@@ -153,7 +159,8 @@ class GuestInteractor implements interactor {
             );
 
             connection.end();
-
+            LogInteractor.insert(logTitle, logDescription);
+            
             return true;
         }
         catch(error){
@@ -170,11 +177,14 @@ class GuestInteractor implements interactor {
      */
     async delete(id: number): Promise<boolean> {
         try{
+            const logTitle = "Hospede Deletado!";
+            const logDescription = `O Hospede de ID ${id} foi removido.`
             const stringSql = "DELETE FROM hospedes WHERE id = ?";
-            
             const connection = await this.getConnection();
+
             await connection.execute(stringSql, [id]);
             connection.end();
+            LogInteractor.insert(logTitle, logDescription);
 
             return true;
         }catch(error){
