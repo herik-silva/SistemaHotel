@@ -190,6 +190,33 @@ class EmployeeInteractor implements interactor {
             return false;
         }
     }
+
+    async authenticate(name: string, password: string): Promise<Employee> {
+        try{
+            const stringSql = "SELECT * FROM funcionarios WHERE name = ? AND password = ?";
+            const connection = await this.getConnection();
+            const row = await connection.query(stringSql, [name, password]);
+
+            if(row[0][0]){
+                const employeeSelected = row[0][0];
+
+                return new Employee(
+                    employeeSelected.id,
+                    employeeSelected.nome,
+                    employeeSelected.CPF,
+                    [employeeSelected.telContatoA, employeeSelected.telContatoB],
+                    employeeSelected.foto,
+                    employeeSelected.turno,
+                    employeeSelected.salarioAtual,
+                    employeeSelected.senha,
+                    employeeSelected.idCargo
+                )
+            }
+        }catch(error){
+            throw error;
+        }
+
+    }
 }
 
 export default EmployeeInteractor;
