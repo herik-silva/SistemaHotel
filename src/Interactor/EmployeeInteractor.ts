@@ -2,6 +2,7 @@ import Employee from "../Entity/Employee";
 import interactor from "./Interactor";
 import { createConnection, Connection } from "mysql2/promise";
 import Database from "./Database";
+import LogInteractor from "./LogInteractor";
 
 class EmployeeInteractor implements interactor {
     private database: Database;
@@ -101,9 +102,11 @@ class EmployeeInteractor implements interactor {
      */
     async insert(name:string, cpf:string, password: string, photo: string, turn: string, contactPhone:Array<string>, currentWage: number, responsabilityId: number): Promise<boolean> {
         try{
+            const logTitle = "Funcionário Cadastrado!";
+            const logDescription = "O funcionário ${name} foi cadastrado.";
             const stringSql = `INSERT INTO funcionarios VALUES(?,?,?,?,?,?,?,?,?,?)`;
-            
             const connection = await this.getConnection();
+            
             await connection.execute(stringSql,
                 [
                     cpf,
@@ -118,7 +121,9 @@ class EmployeeInteractor implements interactor {
                 ]
             );
             connection.end();
- 
+            
+            LogInteractor.insert(logTitle, logDescription);
+                
             return true;
         }catch(error){
             console.log(error);
@@ -141,9 +146,11 @@ class EmployeeInteractor implements interactor {
      */
     async update(id:number, name:string, cpf:string, password: string,photo: string, turn: string,contactPhone:Array<string>, currentWage: number, responsabilityId: number): Promise<any> {
         try{
+            const logTitle = "Funcionário Atualizado!";
+            const logDescription = "O funcionário de ID ${id} foi atualizado.";
             const stringSql = "UPDATE funcionarios SET CPF = ?, nome = ?, foto = ?, senha = ?, turno = ?, idCargo = ?, salarioAtual = ?, telContatoA = ?, telContatoB = ? WHERE id = ?;";
-
             const connection = await this.getConnection();
+
             await connection.execute(stringSql,
                 [
                     cpf,
@@ -158,8 +165,9 @@ class EmployeeInteractor implements interactor {
                     id
                 ]
             );
-
             connection.end();
+
+            LogInteractor.insert(logTitle, logDescription);
 
             return true;
         }
@@ -177,11 +185,15 @@ class EmployeeInteractor implements interactor {
      */
     async delete(id: number): Promise<boolean> {
         try{
+            const logTitle = "Funcionário Deletado!";
+            const logDescription = "O funcionário de ID ${id} foi deletado";
             const stringSql = "DELETE FROM funcionarios WHERE id = ?";
-            
             const connection = await this.getConnection();
+            
             await connection.execute(stringSql, [id]);
             connection.end();
+
+            LogInteractor.insert(logTitle, logDescription);
 
             return true;
         }catch(error){
@@ -191,26 +203,32 @@ class EmployeeInteractor implements interactor {
         }
     }
 
-    async authenticate(name: string, password: string): Promise<Employee> {
+    /**
+     * Autentifica o funcionário dado as suas credênciais.
+     * @param name Nome do funcionário
+     * @param password Senha do funcionário
+     * @returns Retorna o Id do cargo e o nome do funcionário.
+     */
+    async authenticate(name: string, password: string): Promise<any> {
         try{
-            const stringSql = "SELECT * FROM funcionarios WHERE name = ? AND password = ?";
+            const stringSql = "SELECT nome, idCargo FROM funcionarios WHERE nome = ? AND senha = ?";
             const connection = await this.getConnection();
+            var logTitle: string;
+            var logDescription: string;
+            
             const row = await connection.query(stringSql, [name, password]);
 
             if(row[0][0]){
                 const employeeSelected = row[0][0];
-
-                return new Employee(
-                    employeeSelected.id,
-                    employeeSelected.nome,
-                    employeeSelected.CPF,
-                    [employeeSelected.telContatoA, employeeSelected.telContatoB],
-                    employeeSelected.foto,
-                    employeeSelected.turno,
-                    employeeSelected.salarioAtual,
-                    employeeSelected.senha,
-                    employeeSelected.idCargo
-                )
+                
+                logTitle = "Funcionário Autenticado!";
+                logDescription = `O funcionário ${name} foi autenticado`;
+                LogInteractor.insert(logTitle, logDescription);
+                
+                return {
+                    responsabilityId: employeeSelected.idCargo,
+                    name: employeeSelected.nome
+                }
             }
         }catch(error){
             throw error;
