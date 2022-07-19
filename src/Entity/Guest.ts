@@ -4,12 +4,14 @@ class Guest extends People {
     private companyId: number;
     private lastAcommodationId: number;
     private city: string
+    private registrationDate: Date; 
 
-    constructor(id: number, name: string, cpf: string, contactPhone: Array<string>, city: string, company: number = undefined, lastAccommodationId: number = undefined, photo: string = undefined){
+    constructor(id: number, name: string, cpf: string, contactPhone: Array<string>, city: string, registrationDate: Date = new Date(), company: number = undefined, lastAccommodationId: number = undefined, photo: string = undefined){
         super(id, name, cpf, contactPhone, photo);
         this.companyId = company;
         this.lastAcommodationId = lastAccommodationId;
         this.city = city;
+        this.registrationDate = registrationDate;
     }
 
     getCompany(): number {

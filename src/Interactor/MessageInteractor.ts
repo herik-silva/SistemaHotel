@@ -118,8 +118,8 @@ class MessageInteractor implements interactor {
             connection.end();
 
             if(row[0][0]){
-                var index=0;
                 const messagesText = row[0];
+                var index=0;
 
                 while(messagesText[index]){
                     const selectedMessage = messagesText[index];
