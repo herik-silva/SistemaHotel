@@ -22,12 +22,18 @@ class AccommodationRouter implements Router {
     }
 
     async get(request: Request, response: Response): Promise<Response> {
-        const accommodationId = request.body.id as number;
+        const accommodationId = parseInt(request.params.id);
 
         if(accommodationId){
             const accommodation = await this.accommodationInteractor.findByPk(accommodationId);
             if(accommodation){
                 return response.status(Status.OK.code).json(accommodation);
+            }
+        }
+        else{
+            const accommodationList = await this.accommodationInteractor.find("");
+            if(accommodationList && accommodationList.length > 0){
+                return response.status(Status.OK.code).json(accommodationList);
             }
         }
 
@@ -38,13 +44,13 @@ class AccommodationRouter implements Router {
         const accommodationData = request.body;
 
         if(accommodationData){
-            const hasInserted = await this.accommodationInteractor.insert(
+            const lastId = await this.accommodationInteractor.insert(
                 accommodationData.description,
                 accommodationData.dailyPrice
             );
 
-            if(hasInserted){
-                return response.status(Status.OK.code).json(Status.OK);
+            if(lastId > -1){
+                return response.status(Status.OK.code).json({lastId: lastId});
             }
         }
     }

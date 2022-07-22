@@ -24,7 +24,7 @@ class AuthenticateRouter implements Router {
     
     async post(request: Request, response: Response) {
         const userData = request.body as AuthenticateData;
-
+        console.log(userData);
         if(userData){
             const user = await this.employeeInteractor.authenticate(userData.name, userData.password);
 

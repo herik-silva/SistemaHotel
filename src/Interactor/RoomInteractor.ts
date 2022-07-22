@@ -16,27 +16,43 @@ class RoomInteractor implements interactor {
         return await createConnection(`${this.database.dialect}://${this.database.user}:${this.database.key}@localhost:${this.database.port}/${this.database.database}`);
     }
 
-    async insert(number: number, photo: string, status: string, accommodation: number): Promise<boolean> {
+    async getLastId(connection: Connection): Promise<number> {
+        const sqlString = "SELECT LAST_INSERT_ID()";
+        
+        const row = await connection.query(sqlString);
+        const lastId = row[0][0]["LAST_INSERT_ID()"]
+        console.log("Ultimo ID: ", lastId);
+
+        return lastId;
+    }
+
+    async insert(number: number, photo: string, status: string, accommodation: number): Promise<number> {
         try{
+            console.log("INSERIR DADOS");
             const logTitle = "Quarto Cadastrado!";
             const logDescription= `O quarto número ${number} foi cadastrado.`;
-            const stringSql = "INSERT INTO quartos VALUES(?,?,?,?)";
+            const stringSql = "INSERT INTO quartos(numero, statusAtual, foto, idAcomodacao) VALUES(?,?,?,?)";
             const connection = await this.getConnection();
+
+            console.log(`Numero: ${number}\nPhoto: ${photo}\nStatus:${status}\nAccommodation: ${accommodation}`);
 
             await connection.execute(stringSql,
                 [
                     number,
-                    photo,
-                    accommodation,
-                    status
+                    status,
+                    photo || null,
+                    accommodation
                 ]
             );
+
+            const lastId = this.getLastId(connection);
             connection.end();
             LogInteractor.insert(logTitle, logDescription);
-
-            return true;
+            console.log("OK");
+            return lastId;
         }
         catch(error){
+            console.log("DEU RUIM");
             throw error;
         }
     }
@@ -53,6 +69,7 @@ class RoomInteractor implements interactor {
                 const roomSelected = row[0][0];
 
                 return new Room(
+                    roomSelected.id,
                     roomSelected.numero,
                     roomSelected.statusAtual,
                     roomSelected.idAcomodacao,
@@ -82,10 +99,11 @@ class RoomInteractor implements interactor {
                     const roomSelected = roomsText[index];
 
                     roomsFound.push(new Room(
+                        roomSelected.id,
                         roomSelected.numero,
                         roomSelected.statusAtual,
                         roomSelected.idAcomodacao,
-                        roomSelected.foto
+                        `http://localhost:3000/uploads/${roomSelected.foto}`
                     ));
 
                     index++;
@@ -101,21 +119,25 @@ class RoomInteractor implements interactor {
         }
     }
 
-    async update(number: number, photo: string, status: string, accommodation: number): Promise<boolean> {
+    async update(id: number, number: number, photo: string, status: string, accommodation: number): Promise<boolean> {
         try{
             const logTitle = "Quarto Atualizado!";
             const logDescription = `O quarto ${number} foi atualizado.`;
-            const stringSql = "UPDATE quartos SET foto = ?, statusAtual = ?, idAcomodacao = ? WHERE numero = ?";
             const connection = await this.getConnection();
+            var stringSql: string;
+            var params = [number, status, accommodation];
 
-            await connection.execute(stringSql,
-                [
-                    photo,
-                    status,
-                    accommodation,
-                    number
-                ]
-            );
+            if(photo){ // Caso necessite de atualizar a foto
+                stringSql = "UPDATE quartos SET numero = ?, statusAtual = ?, idAcomodacao = ?, foto = ? WHERE id = ?";
+                params.push(photo);
+            }
+            else{
+                stringSql = "UPDATE quartos SET numero = ?, statusAtual = ?, idAcomodacao = ? WHERE id = ?";
+            }
+
+            params.push(id);
+
+            await connection.execute(stringSql, params);
             connection.end();
             LogInteractor.insert(logTitle, logDescription);
 

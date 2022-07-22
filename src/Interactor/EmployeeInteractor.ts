@@ -211,16 +211,17 @@ class EmployeeInteractor implements interactor {
      */
     async authenticate(name: string, password: string): Promise<any> {
         try{
-            const stringSql = "SELECT nome, idCargo FROM funcionarios WHERE nome = ? AND senha = ?";
+            console.log(`${name}:${password}`);
+            const stringSql = "SELECT id, nome, idCargo FROM funcionarios WHERE nome = ? AND senha = ?";
             const connection = await this.getConnection();
             var logTitle: string;
             var logDescription: string;
             
             const row = await connection.query(stringSql, [name, password]);
-
+            console.log(row[0][0])
             if(row[0][0]){
                 const employeeSelected = row[0][0];
-                
+                console.log(employeeSelected);
                 logTitle = "Funcionário Autenticado!";
                 logDescription = `O funcionário ${name} foi autenticado`;
                 LogInteractor.insert(logTitle, logDescription);

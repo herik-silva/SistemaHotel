@@ -1,18 +1,24 @@
 class Room {
-    private roomId: number;
+    private id: number;
+    private number: number;
     private status: string;
     private photo: string;
     private accommodationId: number;
 
-    constructor(roomId: number, status: string, accommodation: number, photo: string){
-        this.roomId = roomId;
+    constructor(id: number, number: number, status: string, accommodation: number, photo: string){
+        this.id = id;
+        this.number = number;
         this.status = status;
         this.accommodationId = accommodation;
         this.photo = photo;
     }
 
-    getRoomId(): number {
-        return this.roomId;
+    getId(): number {
+        return this.id;
+    }
+
+    getNumber(): number {
+        return this.number;
     }
 
     getStatus(): string {

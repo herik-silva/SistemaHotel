@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
 import multer from "multer";
+
 import Database from "../Interactor/Database";
 import AccommodationRouter from "./AccommodationRouter";
 import AuthenticateRouter from "./AuthenticateRouter";
@@ -24,10 +25,24 @@ const reserveRouter = new ReserveRouter(database);
 const authenticateRouter = new AuthenticateRouter(database);
 
 const router = Router();
-const upload = multer();
+
+const storage = multer.diskStorage({
+    destination(req, file, callback) {
+        callback(null, "src/pages/uploads/");
+    },
+    filename(req, file, callback) {
+        callback(null, file.originalname);
+    }
+})
+
+const upload = multer({ storage });
 
 router.get("/", (request: Request, response: Response) => {
-    return response.sendFile("/index.html");
+    return response.sendFile("/Hotel Silveira - Interfaces.pdf");
+});
+
+router.get("/pdf", (request: Request, response: Response) => {
+    return response.download(`${__dirname}/../pages/Hotel Silveira - Interfaces.pdf`);
 });
 
 // Guest Route
@@ -43,8 +58,12 @@ router.put("/employee", upload.none(), employeeRouter.put);
 router.delete("/employee", upload.none(), employeeRouter.delete);
 
 // Accommodation Route
-router.get("/accommodation", upload.none(), accommodationRouter.get);
-router.post("/accommodation", upload.none(), accommodationRouter.post);
+router.get("/accommodation/:id", upload.none(), async(req, res)=>{
+    return await accommodationRouter.get(req, res);
+});
+router.post("/accommodation", upload.none(), async(req, res)=>{
+    return await accommodationRouter.post(req, res);
+});
 router.put("/accommodation", upload.none(), accommodationRouter.put);
 router.delete("/accommodation", upload.none(), accommodationRouter.delete);
 
@@ -67,10 +86,19 @@ router.put("/company", upload.none(), companyRouter.put);
 router.delete("/company", upload.none(), companyRouter.delete);
 
 // Room Route
-router.get("/room", upload.none(), roomRouter.get);
-router.post("/room", upload.none(), roomRouter.post);
-router.put("/room", upload.none(), roomRouter.put);
-router.delete("/room", upload.none(), roomRouter.delete);
+router.get("/room/:number", upload.none(), async(req, res)=>{
+    return await roomRouter.get(req, res);
+});
+router.post("/room", upload.single("image"), async(req, res)=>{
+    return await roomRouter.post(req, res);
+});
+router.put("/room", upload.single("image"), async(req, res)=>{
+    return await roomRouter.put(req, res);
+});
+
+router.delete("/room", upload.none(), async(req, res) => {
+    return await roomRouter.delete(req, res);
+});
 
 // Responsability Route
 router.get("/responsability", upload.none(), responsabilityRouter.get);
@@ -85,6 +113,9 @@ router.put("/reserve", upload.none(), reserveRouter.put);
 router.delete("/reserve", upload.none(), reserveRouter.delete);
 
 // Authenticate Route
-router.post("/authenticate", upload.none(), authenticateRouter.post);
+router.post("/authenticate", upload.none(), async(req, res) => {
+    console.log("AUTENTICAR");
+    return await authenticateRouter.post(req, res);
+});
 
 export default router;

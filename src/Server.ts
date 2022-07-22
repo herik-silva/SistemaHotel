@@ -12,9 +12,14 @@ class Server {
     }
 
     initServer(port: number = this.port): void {
+        const corsOptions = {
+            origin: "*",
+            optionsSucessStatus: 200
+        }
+
         this.app.use(express.static(__dirname+"/pages"));
         this.app.use(router);
-        this.app.use(cors);
+        this.app.use(cors(corsOptions));
         
         this.app.listen(port, ()=> {
             console.log(`http://localhost:${this.port}`);

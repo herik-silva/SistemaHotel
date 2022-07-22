@@ -80,7 +80,17 @@ class AccommodationInteractor implements interactor {
         }
     }
 
-    async insert(description: string, dailyPrice: number): Promise<boolean> {
+    async getLastId(connection: Connection): Promise<number> {
+        const sqlString = "SELECT LAST_INSERT_ID()";
+        
+        const row = await connection.query(sqlString);
+        const lastId = row[0][0]["LAST_INSERT_ID()"]
+        console.log("Ultimo ID: ", lastId);
+
+        return lastId;
+    }
+
+    async insert(description: string, dailyPrice: number): Promise<number> {
         try{
             const logTitle = "Acomodação Cadastrada!";
             const logDescription = `A acomodação ${description} com a diária de R$ ${dailyPrice} foi cadastrada.`
@@ -93,14 +103,15 @@ class AccommodationInteractor implements interactor {
                     dailyPrice
                 ]
             );
+            const lastId = await this.getLastId(connection);
             connection.end();
             LogInteractor.insert(logTitle, logDescription);
 
-            return true;
+            return lastId;
         }
         catch(error){
             console.log(error);
-            return false;
+            return -1;
         }
     }
 
