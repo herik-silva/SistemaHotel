@@ -22,7 +22,7 @@ class ResponsabilityRouter implements Router {
     }
 
     async get(request: Request, response: Response): Promise<Response> {
-        const responsabilityId = request.body.id as number;
+        const responsabilityId = parseInt(request.params.id);
 
         if(responsabilityId){
             const responsability = await this.responsabilityInteractor.findByPk(responsabilityId);
@@ -31,6 +31,14 @@ class ResponsabilityRouter implements Router {
                 return response.status(Status.OK.code).json(responsability);
             }
         }
+        else{
+            console.log("Todos");
+            const responsabilityList = await this.responsabilityInteractor.find("%");
+            if(responsabilityList && responsabilityList.length>0){
+                return response.status(Status.OK.code).json(responsabilityList);
+            }
+        }
+
 
         return response.status(Status.NOT_FOUND.code).json(Status.NOT_FOUND);
     }

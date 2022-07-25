@@ -218,15 +218,14 @@ class EmployeeInteractor implements interactor {
             var logDescription: string;
             
             const row = await connection.query(stringSql, [name, password]);
-            console.log(row[0][0])
             if(row[0][0]){
                 const employeeSelected = row[0][0];
-                console.log(employeeSelected);
                 logTitle = "Funcionário Autenticado!";
                 logDescription = `O funcionário ${name} foi autenticado`;
                 LogInteractor.insert(logTitle, logDescription);
-                
+                console.log(employeeSelected);
                 return {
+                    id: employeeSelected.id,
                     responsabilityId: employeeSelected.idCargo,
                     name: employeeSelected.nome
                 }

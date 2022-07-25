@@ -101,13 +101,17 @@ router.delete("/room", upload.none(), async(req, res) => {
 });
 
 // Responsability Route
-router.get("/responsability", upload.none(), responsabilityRouter.get);
+router.get("/responsability/:id", upload.none(), async(req, res) => {
+    return await responsabilityRouter.get(req, res);
+});
 router.post("/responsability", upload.none(), responsabilityRouter.post);
 router.put("/responsability", upload.none(), responsabilityRouter.put);
 router.delete("/responsability", upload.none(), responsabilityRouter.delete);
 
 // Responsability Route
-router.get("/reserve", upload.none(), reserveRouter.get);
+router.get("/reserve", upload.none(), async(req, res) => {
+    return await reserveRouter.get(req, res);
+});
 router.post("/reserve", upload.none(), reserveRouter.post);
 router.put("/reserve", upload.none(), reserveRouter.put);
 router.delete("/reserve", upload.none(), reserveRouter.delete);
