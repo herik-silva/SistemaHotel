@@ -34,7 +34,7 @@ class GuestInteractor implements interactor {
         if(rows[0][0]){
             var index = 0;
             const guestsText = rows[0];
-
+            console.log(guestsText);
             // Instancia todos os hospedes encontrados
             while(guestsText[index]){
                 const guestSelected = guestsText[index];
@@ -42,7 +42,7 @@ class GuestInteractor implements interactor {
                 guestsFound.push(new Guest(
                     guestSelected.id,
                     guestSelected.nome,
-                    guestSelected.CPF,
+                    guestSelected.cpf,
                     [guestSelected.telefoneContatoA, guestSelected.telefoneContatoB],
                     guestSelected.cidade, 
                     guestSelected.idEmpresa,
@@ -76,7 +76,7 @@ class GuestInteractor implements interactor {
             return new Guest(
                 guestSelected.id,
                 guestSelected.nome,
-                guestSelected.CPF,
+                guestSelected.cpf,
                 [guestSelected.telefoneContatoA, guestSelected.telefoneContatoB],
                 guestSelected.cidade, 
                 guestSelected.idEmpresa,

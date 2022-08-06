@@ -46,8 +46,12 @@ router.get("/pdf", (request: Request, response: Response) => {
 });
 
 // Guest Route
-router.get("/guest", upload.none(), guestRouter.get);
-router.post("/guest", upload.none(), guestRouter.post);
+router.get("/guest/:id", upload.none(), async(req, res) => {
+    return await guestRouter.get(req, res)
+});
+router.post("/guest", upload.none(), async(req, res) => {
+    return await guestRouter.post(req, res);
+});
 router.put("/guest", upload.none(), guestRouter.put);
 router.delete("/guest", upload.none(), guestRouter.delete);
 
@@ -109,16 +113,17 @@ router.put("/responsability", upload.none(), responsabilityRouter.put);
 router.delete("/responsability", upload.none(), responsabilityRouter.delete);
 
 // Responsability Route
-router.get("/reserve", upload.none(), async(req, res) => {
+router.get("/reserve/:id", upload.none(), async(req, res) => {
     return await reserveRouter.get(req, res);
 });
-router.post("/reserve", upload.none(), reserveRouter.post);
+router.post("/reserve", upload.none(), async(req, res) => {
+    return await reserveRouter.post(req, res);
+});
 router.put("/reserve", upload.none(), reserveRouter.put);
 router.delete("/reserve", upload.none(), reserveRouter.delete);
 
 // Authenticate Route
 router.post("/authenticate", upload.none(), async(req, res) => {
-    console.log("AUTENTICAR");
     return await authenticateRouter.post(req, res);
 });
 

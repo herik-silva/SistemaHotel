@@ -23,13 +23,18 @@ class AuthenticateRouter implements Router {
     }
     
     async post(request: Request, response: Response) {
-        const userData = request.body as AuthenticateData;
-        console.log(userData);
-        if(userData){
-            const user = await this.employeeInteractor.authenticate(userData.name, userData.password);
-
-            if(user){
-                return response.status(Status.OK.code).json(user);
+        const authB64 = request.headers.authorization; // Basic *
+        console.log(authB64)
+        if(authB64){
+            const auth = atob(authB64.split(" ")[1]);
+            console.log(auth);
+            console.log("Autenticado")
+            if(auth){
+                const user = await this.employeeInteractor.authenticate(auth);
+    
+                if(user){
+                    return response.status(Status.OK.code).json(user);
+                }
             }
         }
 

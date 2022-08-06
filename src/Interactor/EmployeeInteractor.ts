@@ -209,14 +209,13 @@ class EmployeeInteractor implements interactor {
      * @param password Senha do funcionário
      * @returns Retorna o Id do cargo e o nome do funcionário.
      */
-    async authenticate(name: string, password: string): Promise<any> {
+    async authenticate(auth: string): Promise<any> {
         try{
-            console.log(`${name}:${password}`);
+            const [name, password] = auth.split(":");
             const stringSql = "SELECT id, nome, idCargo FROM funcionarios WHERE nome = ? AND senha = ?";
             const connection = await this.getConnection();
             var logTitle: string;
             var logDescription: string;
-            
             const row = await connection.query(stringSql, [name, password]);
             if(row[0][0]){
                 const employeeSelected = row[0][0];

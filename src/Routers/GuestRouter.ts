@@ -22,12 +22,20 @@ class GuestRouter implements Router {
     }
 
     async get(request: Request, response: Response) {
-        const guestId = request.body.id as number;
+        const guestId = parseInt(request.params.id);
 
-        const guest = await this.guestInteractor.findByPk(guestId);
-
-        if(guest){
-            return response.status(Status.OK.code).json(guest);
+        if(guestId){
+            const guest = await this.guestInteractor.findByPk(guestId);
+    
+            if(guest){
+                return response.status(Status.OK.code).json(guest);
+            }
+        }
+        else {
+            const guestList = await this.guestInteractor.find("name", "%");
+            if(guestList){
+                return response.status(Status.OK.code).json(guestList);
+            }
         }
         
         return response.status(Status.NOT_FOUND.code).json(Status.NOT_FOUND);

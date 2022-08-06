@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import Room from "../Entity/Room";
 import Status from "../Entity/Status";
 import Database from "../Interactor/Database";
 import RoomInteractor from "../Interactor/RoomInteractor";
@@ -34,8 +35,21 @@ class RoomRouter implements Router {
             }
         }
         else{
-            console.log("SEM PARAMETRO PEGAR TODOS");
-            const rooms = await this.roomInteractor.find("numero","");
+            const type = request.params.number;
+            console.log(type);
+            var rooms: Array<Room>;
+            switch(type){
+                case "all":
+                    console.log("SEM PARAMETRO PEGAR TODOS");
+                    rooms = await this.roomInteractor.find("numero","");
+                    break;
+
+                case "livre":
+                    console.log("LIVRES");
+                    rooms = await this.roomInteractor.find("statusAtual", "Livre");
+                    break;
+            }
+
             if(rooms && rooms.length>0){
                 return response.status(Status.OK.code).json(rooms);
             }

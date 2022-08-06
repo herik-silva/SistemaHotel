@@ -22,7 +22,7 @@ class ReserveRouter implements Router {
     }
     
     async get(request: Request, response: Response): Promise<Response> {
-        const reserveId = request.body.id as number;
+        const reserveId = parseInt(request.params.id);
 
         if(reserveId){
             const reserve = await this.reserveInteractor.findByPk(reserveId);
@@ -31,13 +31,20 @@ class ReserveRouter implements Router {
                 return response.status(Status.OK.code).json(reserve);
             }
         }
+        else {
+            const reserveList = await this.reserveInteractor.find("id", "%");
+
+            if(reserveList){
+                console.log(reserveList);
+                return response.status(Status.OK.code).json(reserveList);
+            }
+        }
 
         return response.status(Status.NOT_FOUND.code).json(Status.NOT_FOUND);
     }
 
     async post(request: Request, response: Response): Promise<Response> {
         const reserveData = request.body;
-
         if(reserveData){
             const hasInserted = await this.reserveInteractor.insert(
                     reserveData.entryDate,
@@ -46,8 +53,8 @@ class ReserveRouter implements Router {
                     reserveData.roomId,
                     reserveData.guestId,
                     reserveData.employeeId,
-                    reserveData.statusm,
-                    reserveData.checkinAmount,
+                    reserveData.status,
+                    reserveData.checkInAmount,
                     reserveData.payment
             );
 

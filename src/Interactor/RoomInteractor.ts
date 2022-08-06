@@ -67,7 +67,6 @@ class RoomInteractor implements interactor {
 
             if(row[0][0]){
                 const roomSelected = row[0][0];
-
                 return new Room(
                     roomSelected.id,
                     roomSelected.numero,
