@@ -1,10 +1,8 @@
-import Employee from "./Employee";
-import Guest from "./Guest";
-
 class Reserve {
     private reserveId: number;
     private entryDate: Date;
     private checkOutDate: Date;
+    private lastCheckin: Date;
     private amountPeople: number;
     private roomNumber: number;
     private guest: number;
@@ -12,8 +10,9 @@ class Reserve {
     private status: string;
     private checkinAmount: number;
     private payment: number;
+    private observation: string;
 
-    constructor(id: number, entryDate: Date, checkOutDate: Date, amountPeople: number, roomNumber: number, guest: number, employee: number, status: string, checkinAmount: number, payment: number) {
+    constructor(id: number, entryDate: Date, checkOutDate: Date, amountPeople: number, roomNumber: number, guest: number, employee: number, status: string, checkinAmount: number, payment: number, observation: string = "", lastCheckin: Date = undefined) {
         this.reserveId = id;
         this.entryDate = entryDate;
         this.checkOutDate = checkOutDate;
@@ -24,6 +23,8 @@ class Reserve {
         this.status = status;
         this.checkinAmount = checkinAmount;
         this.payment = payment;
+        this.observation = observation;
+        this.lastCheckin = lastCheckin;
     }
 
     getReserveId(): number {
@@ -102,8 +103,8 @@ class Reserve {
         this.payment = paymentId;
     }
 
-    makeCheckin(): void {
-        this.checkinAmount++;
+    setObservation(newObservartion: string): void {
+        this.observation = newObservartion;
     }
 }
 

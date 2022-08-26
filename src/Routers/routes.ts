@@ -52,7 +52,9 @@ router.get("/guest/:id", upload.none(), async(req, res) => {
 router.post("/guest", upload.none(), async(req, res) => {
     return await guestRouter.post(req, res);
 });
-router.put("/guest", upload.none(), guestRouter.put);
+router.put("/guest", upload.none(), async(req, res) => {
+    return await guestRouter.put(req, res);
+});
 router.delete("/guest", upload.none(), guestRouter.delete);
 
 // Employee Route
@@ -100,7 +102,7 @@ router.put("/room", upload.single("image"), async(req, res)=>{
     return await roomRouter.put(req, res);
 });
 
-router.delete("/room", upload.none(), async(req, res) => {
+router.delete("/room/:number", upload.none(), async(req, res) => {
     return await roomRouter.delete(req, res);
 });
 
@@ -119,7 +121,11 @@ router.get("/reserve/:id", upload.none(), async(req, res) => {
 router.post("/reserve", upload.none(), async(req, res) => {
     return await reserveRouter.post(req, res);
 });
-router.put("/reserve", upload.none(), reserveRouter.put);
+router.put("/reserve/:option", upload.none(), async(req, res) => {
+    console.log("Atualizar reserva");
+    return await reserveRouter.put(req, res);
+});
+
 router.delete("/reserve", upload.none(), reserveRouter.delete);
 
 // Authenticate Route

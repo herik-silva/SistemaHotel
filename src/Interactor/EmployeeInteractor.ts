@@ -21,7 +21,7 @@ class EmployeeInteractor implements interactor {
      * @returns 
      */
     async find(name: string): Promise<Array<Employee>> {
-        const stringSql = `SELECT * FROM funcionarios WHERE nome LIKE "${name}%"`;
+        const stringSql = `SELECT * FROM lista_funcionarios WHERE nome LIKE "${name}%"`;
 
         const connection = await this.getConnection();
         const employeesFound = new Array<Employee>();
@@ -33,7 +33,7 @@ class EmployeeInteractor implements interactor {
             var index = 0;
             const employeesText = rows[0];
 
-            // Instancia todos os funcionarios encontrados
+            // Instancia todos os lista_funcionarios encontrados
             while(employeesText[index]){
                 const employeeSelected = employeesText[index];
 
@@ -104,7 +104,7 @@ class EmployeeInteractor implements interactor {
         try{
             const logTitle = "Funcionário Cadastrado!";
             const logDescription = "O funcionário ${name} foi cadastrado.";
-            const stringSql = `INSERT INTO funcionarios VALUES(?,?,?,?,?,?,?,?,?,?)`;
+            const stringSql = `INSERT INTO lista_funcionarios VALUES(?,?,?,?,?,?,?,?,?,?)`;
             const connection = await this.getConnection();
             
             await connection.execute(stringSql,
@@ -148,7 +148,7 @@ class EmployeeInteractor implements interactor {
         try{
             const logTitle = "Funcionário Atualizado!";
             const logDescription = "O funcionário de ID ${id} foi atualizado.";
-            const stringSql = "UPDATE funcionarios SET CPF = ?, nome = ?, foto = ?, senha = ?, turno = ?, idCargo = ?, salarioAtual = ?, telContatoA = ?, telContatoB = ? WHERE id = ?;";
+            const stringSql = "UPDATE lista_funcionarios SET CPF = ?, nome = ?, foto = ?, senha = ?, turno = ?, idCargo = ?, salarioAtual = ?, telContatoA = ?, telContatoB = ? WHERE id = ?;";
             const connection = await this.getConnection();
 
             await connection.execute(stringSql,
@@ -187,7 +187,7 @@ class EmployeeInteractor implements interactor {
         try{
             const logTitle = "Funcionário Deletado!";
             const logDescription = "O funcionário de ID ${id} foi deletado";
-            const stringSql = "DELETE FROM funcionarios WHERE id = ?";
+            const stringSql = "DELETE FROM lista_funcionarios WHERE id = ?";
             const connection = await this.getConnection();
             
             await connection.execute(stringSql, [id]);
@@ -212,13 +212,14 @@ class EmployeeInteractor implements interactor {
     async authenticate(auth: string): Promise<any> {
         try{
             const [name, password] = auth.split(":");
-            const stringSql = "SELECT id, nome, idCargo FROM funcionarios WHERE nome = ? AND senha = ?";
+            const stringSql = "SELECT id, nome, idCargo, nivelAcesso FROM lista_funcionarios WHERE nome = ? AND senha = ?";
             const connection = await this.getConnection();
             var logTitle: string;
             var logDescription: string;
             const row = await connection.query(stringSql, [name, password]);
             if(row[0][0]){
                 const employeeSelected = row[0][0];
+                console.log(employeeSelected);
                 logTitle = "Funcionário Autenticado!";
                 logDescription = `O funcionário ${name} foi autenticado`;
                 LogInteractor.insert(logTitle, logDescription);
@@ -226,7 +227,9 @@ class EmployeeInteractor implements interactor {
                 return {
                     id: employeeSelected.id,
                     responsabilityId: employeeSelected.idCargo,
-                    name: employeeSelected.nome
+                    name: employeeSelected.nome,
+                    responsabilityName: employeeSelected.nome,
+                    acessLevel: employeeSelected.nivelAcesso
                 }
             }
         }catch(error){

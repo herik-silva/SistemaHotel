@@ -60,7 +60,7 @@ class RoomRouter implements Router {
 
     async post(request: Request, response: Response): Promise<Response> {
         const roomData = request.body;
-        console.log(this.roomInteractor);
+        console.log(roomData);
         if(roomData){
             console.log("CHEGOU DADOS")
             const lastId = await this.roomInteractor.insert(
@@ -99,12 +99,13 @@ class RoomRouter implements Router {
     }
     
     async delete(request: Request, response: Response): Promise<Response> {
-        const roomNumber = request.body.number as number;
-
+        const roomNumber = parseInt(request.params.number);
+        console.log(roomNumber);
         if(roomNumber){
             const hasDeleted = await this.roomInteractor.delete(roomNumber);
 
             if(hasDeleted){
+                console.log(Status.OK);
                 return response.status(Status.OK.code).json(Status.OK);
             }
         }

@@ -1,4 +1,5 @@
 import People from "./People";
+import Responsibility from "./Responsibility";
 
 /**
  * Classe que representa um funcionário no sistema.
@@ -11,14 +12,14 @@ class Employee extends People {
     private turn: string;
     private salary: number;
     private password: string;
-    private responsibilityId: number;
+    private responsibility: Responsibility
 
-    constructor(id: number, name: string, cpf: string, contactPhone: Array<string> = [], photo: string = undefined,turn: string, salary: number, password: string, responsabilityId: number){
+    constructor(id: number, name: string, cpf: string, contactPhone: Array<string> = [], photo: string = undefined,turn: string, salary: number, password: string, responsability: Responsibility){
         super(id,name,cpf,contactPhone,photo);
         this.turn = turn;
         this.salary = salary;
         this.password = password;
-        this.responsibilityId = responsabilityId;
+        this.responsibility = responsability;
     }
 
     getTurn(): string {
@@ -33,8 +34,8 @@ class Employee extends People {
         return this.password;
     }
 
-    getResponsability(): number {
-        return this.responsibilityId;
+    getResponsability(): Responsibility {
+        return this.responsibility;
     }
 
     setTurn(newTurn: string) {
@@ -49,8 +50,8 @@ class Employee extends People {
         this.password = newPassword;
     }
 
-    setResponsability(newResponsability: number): void {
-        this.responsibilityId = newResponsability;
+    setResponsability(newResponsability: Responsibility): void {
+        this.responsibility = newResponsability;
     }
 }
 

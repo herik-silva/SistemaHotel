@@ -34,6 +34,9 @@ class GuestRouter implements Router {
         else {
             const guestList = await this.guestInteractor.find("name", "%");
             if(guestList){
+                console.log("\n\n\BUSCANDO\n");
+                console.log(guestList);
+
                 return response.status(Status.OK.code).json(guestList);
             }
         }
@@ -42,26 +45,27 @@ class GuestRouter implements Router {
     }
 
     async post(request: Request, response: Response) {
+        console.log("INSERIR GUEST");
         const guestData = request.body;
-
-        const hasInserted = await this.guestInteractor.insert(
+        console.log(guestData);
+        const insertedId = await this.guestInteractor.insert(
             guestData.name,
             guestData.cpf,
             guestData.photo,
             guestData.contactPhone,
             guestData.city,
-            guestData.companyId,
-            
+            guestData.companyId
         )
 
-        if(true){
-            return response.status(Status.OK.code).json(Status.OK);
+        if(insertedId){
+            return response.status(Status.OK.code).json({lastId: insertedId});
         }
     }
 
     async put(request: Request, response: Response) {
         const guestData = request.body;
-
+        console.log("\n\n\nATUALIZANDO\n");
+        console.log(guestData);
         const hasUpdated = await this.guestInteractor.update(
             guestData.id,
             guestData.name,

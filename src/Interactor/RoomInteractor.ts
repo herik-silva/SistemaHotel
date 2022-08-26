@@ -59,7 +59,7 @@ class RoomInteractor implements interactor {
 
     async findByPk(id: number): Promise<Room> {
         try{
-            const stringSql = "SELECT * FROM quartos WHERE numero = ?";
+            const stringSql = "SELECT * FROM quartos_habilitados WHERE id = ?";
             
             const connection = await this.getConnection();
             const row = await connection.query(stringSql, id);
@@ -83,7 +83,7 @@ class RoomInteractor implements interactor {
 
     async find(field: string, value: string): Promise<Array<Room>> {
         try{
-            const stringSql = `SELECT * FROM quartos WHERE ${field} LIKE "${value}%"`;
+            const stringSql = `SELECT * FROM quartos_habilitados WHERE ${field} LIKE "${value}%"`;
 
             const connection = await this.getConnection();
             const roomsFound = new Array<Room>();
@@ -151,7 +151,7 @@ class RoomInteractor implements interactor {
         try{
             const logTitle = "Quarto Removido!";
             const logDescription = `O quarto ${id} foi removido!`;
-            const stringSql = "DELETE FROM quartos WHERE numero = ?";
+            const stringSql = "UPDATE quartos SET removido = true WHERE id = ?";
             const connection = await this.getConnection();
             
             await connection.execute(stringSql, [id]);

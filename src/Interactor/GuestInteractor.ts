@@ -15,6 +15,16 @@ class GuestInteractor implements interactor {
         return await createConnection(`${this.database.dialect}://${this.database.user}:${this.database.key}@localhost:${this.database.port}/${this.database.database}`);
     }
 
+    async getLastId(connection: Connection): Promise<number> {
+        const sqlString = "SELECT LAST_INSERT_ID()";
+        
+        const row = await connection.query(sqlString);
+        const lastId = row[0][0]["LAST_INSERT_ID()"]
+        console.log("Ultimo ID: ", lastId);
+
+        return lastId;
+    }
+
     /**
      * Realiza a busca de um hospede pelo campo desejado.
      * @param key Campo que será utilizado na busca.
@@ -43,8 +53,9 @@ class GuestInteractor implements interactor {
                     guestSelected.id,
                     guestSelected.nome,
                     guestSelected.cpf,
-                    [guestSelected.telefoneContatoA, guestSelected.telefoneContatoB],
-                    guestSelected.cidade, 
+                    guestSelected.telefoneContatoA,
+                    guestSelected.cidade,
+                    guestSelected.dataRegistro,
                     guestSelected.idEmpresa,
                     guestSelected.idUltimaAcomodacao,
                     guestSelected.foto
@@ -77,8 +88,9 @@ class GuestInteractor implements interactor {
                 guestSelected.id,
                 guestSelected.nome,
                 guestSelected.cpf,
-                [guestSelected.telefoneContatoA, guestSelected.telefoneContatoB],
-                guestSelected.cidade, 
+                guestSelected.telefoneContatoA,
+                guestSelected.cidade,
+                guestSelected.dataRegistro,
                 guestSelected.idEmpresa,
                 guestSelected.idUltimaAcomodacao,
                 guestSelected.foto
@@ -96,11 +108,12 @@ class GuestInteractor implements interactor {
      * @param companyId 
      * @returns Retorna TRUE se for bem sucedido
      */
-    async insert(name:string, cpf:string, photo: string, contactPhone:Array<string>, city:string, companyId: number): Promise<boolean> {
+    async insert(name:string, cpf:string, photo: string, contactPhone:Array<string>, city:string, companyId: number): Promise<number> {
+        console.log(contactPhone);
         try{
             const logTitle = "Hospede Cadastrado";
             const logDescription = `O Hospede ${name} foi cadastrado!`;
-            const stringSql = "INSERT INTO hospedes VALUES(?,?,?,?,?,?,?,?,?)";
+            const stringSql = "INSERT INTO hospedes(cpf, nome, foto, cidade, telefoneContatoA, idEmpresa, idUltimaAcomodacao, dataRegistro) VALUES(?,?,?,?,?,?,?,?)";
 
             const connection = await this.getConnection();
             await connection.execute(stringSql,
@@ -109,19 +122,21 @@ class GuestInteractor implements interactor {
                     name,
                     photo,
                     city,
-                    contactPhone[0],
-                    contactPhone[1],
+                    contactPhone,
                     companyId,
+                    1, // Ultima acomodação padrão
+                    new Date()
                 ]
             );
+            const lastId = await this.getLastId(connection); 
             connection.end();
             LogInteractor.insert(logTitle, logDescription);
  
-            return true;
+            return lastId;
         }catch(error){
             console.log("ERRO");
             console.log(error);
-            return false;
+            return -1;
         }
     }
 
@@ -137,11 +152,11 @@ class GuestInteractor implements interactor {
      * @param lastIdAccommodation 
      * @returns 
      */
-    async update(id:number, name:string, cpf:string, photo: string, contactPhone:Array<string>, city:string, companyId: number, lastIdAccommodation: number): Promise<any> {
+    async update(id:number, name:string, cpf:string, photo: string, contactPhone: string, city:string, companyId: number, lastIdAccommodation: number): Promise<any> {
         try{
             const logTitle = "Hospede Atualizado!";
             const logDescription = `O Hospede de ID ${id} foi atualizado.`;
-            const stringSql = "UPDATE hospedes SET CPF = ?, nome = ?, foto = ?, cidade = ?, telefoneContatoA = ?, telefoneContatoB = ?, idEmpresa = ?, idUltimaAcomodacao = ? WHERE id = ?;";
+            const stringSql = "UPDATE hospedes SET CPF = ?, nome = ?, foto = ?, cidade = ?, telefoneContatoA = ?, idEmpresa = ?, idUltimaAcomodacao = ? WHERE id = ?;";
 
             const connection = await this.getConnection();
             await connection.execute(stringSql,
@@ -150,8 +165,7 @@ class GuestInteractor implements interactor {
                     name,
                     photo,
                     city,
-                    contactPhone[0],
-                    contactPhone[1],
+                    contactPhone,
                     companyId,
                     lastIdAccommodation,
                     id

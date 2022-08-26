@@ -46,7 +46,7 @@ class ReserveRouter implements Router {
     async post(request: Request, response: Response): Promise<Response> {
         const reserveData = request.body;
         if(reserveData){
-            const hasInserted = await this.reserveInteractor.insert(
+            const reserveId = await this.reserveInteractor.insert(
                     reserveData.entryDate,
                     reserveData.checkoutDate,
                     reserveData.amountPeople,
@@ -55,11 +55,12 @@ class ReserveRouter implements Router {
                     reserveData.employeeId,
                     reserveData.status,
                     reserveData.checkInAmount,
+                    reserveData.observation,
                     reserveData.payment
             );
 
-            if(hasInserted){
-                return response.status(Status.OK.code).json(Status.OK);
+            if(reserveId){
+                return response.status(Status.OK.code).json({id: reserveId});
             }
         }
 
@@ -67,9 +68,12 @@ class ReserveRouter implements Router {
     }
 
     async put(request: Request, response: Response): Promise<Response> {
+        const UPDATE = "update";
+        const CHECKIN = "checkin";
         const reserveData = request.body;
-
-        if(reserveData){
+        const option = request.params.option;
+        console.log(reserveData);
+        if(reserveData && option == UPDATE){
             const hasUpdated = await this.reserveInteractor.update(
                 reserveData.id,
                 reserveData.entryDate,
@@ -78,12 +82,22 @@ class ReserveRouter implements Router {
                 reserveData.roomId,
                 reserveData.guestId,
                 reserveData.employeeId,
-                reserveData.statusm,
+                reserveData.status,
                 reserveData.checkinAmount,
-                reserveData.payment
+                reserveData.payment,
+                reserveData.observation
             )
 
             if(hasUpdated){
+                return response.status(Status.OK.code).json(Status.OK);
+            }
+        }
+        
+        if(reserveData && option == CHECKIN){
+            console.log("Checkin");
+            const makedCheckin = await this.reserveInteractor.makeCheckin(reserveData.id, reserveData.status, reserveData.checkinAmount, reserveData.lastCheckin);
+            if(makedCheckin){
+                console.log("BOTOU")
                 return response.status(Status.OK.code).json(Status.OK);
             }
         }

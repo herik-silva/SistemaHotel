@@ -1,7 +1,6 @@
 class Responsibility {
     private id: number;
     private name: string;
-    private description: string;
     private acessLevel: number;
 
     constructor(id: number, name: string , acessLevel: number){

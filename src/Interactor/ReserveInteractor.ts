@@ -3,6 +3,7 @@ import Database from "./Database";
 import { createConnection, Connection } from "mysql2/promise";
 import ViewReserve from "../Entity/ViewReserve";
 import LogInteractor from "./LogInteractor";
+import Formater from "../Entity/Formater";
 
 class ReserveInteractor implements Interactor {
     private database: Database;
@@ -52,8 +53,13 @@ class ReserveInteractor implements Interactor {
                         reserveSelected.statusCheckin,
                         reserveSelected.contadorCheckin,
                         reserveSelected.idFormaPagamento,
+                        reserveSelected.observacoes,
                         reserveSelected.nomeHospede,
-                        reserveSelected.nomeFuncionario
+                        reserveSelected.nomeFuncionario,
+                        reserveSelected.fotoHospede,
+                        reserveSelected.fotoQuarto,
+                        Formater.formatContactPhone(reserveSelected.telContato),
+                        reserveSelected.ultimoCheckin
                     ));
 
                     index++;
@@ -89,8 +95,13 @@ class ReserveInteractor implements Interactor {
                     reserveSelected.statusCheckin,
                     reserveSelected.contadorCheckin,
                     reserveSelected.idFormaPagamento,
+                    reserveSelected.observacoes,
                     reserveSelected.nomeHospede,
-                    reserveSelected.nomeFuncionario
+                    reserveSelected.nomeFuncionario,
+                    reserveSelected.fotoHospede,
+                    reserveSelected.fotoQuarto,
+                    reserveSelected.telContato,
+                    reserveSelected.ultimoCheckin
                 );
             }
         }
@@ -99,12 +110,12 @@ class ReserveInteractor implements Interactor {
         }
     }
 
-    async insert(entryDate: Date, checkoutDate: Date, amountPeople: number, roomId: number, guestId: number, employeeId: number, status: boolean, checkinAmount: number, payment: number=undefined): Promise<boolean> {
+    async insert(entryDate: Date, checkoutDate: Date, amountPeople: number, roomId: number, guestId: number, employeeId: number, status: boolean, checkinAmount: number, observation: string = "", payment: number=undefined): Promise<number> {
         try{
             const logTitle = "Reserva Cadastrada";
-            const logDescription = `A reserva do quarto {roomId} foi realizada`;
-            const stringSql = "INSERT INTO reserva(dataEntrada,dataSaida,idFormaPagamento,qtdePessoas,fk_idFuncionario,fk_idHospede,fk_numeroQuarto,contadorCheckin,statusCheckin) VALUES(?,?,?,?,?,?,?,?,?)";
-            const roomUpdate = "UPDATE quartos SET statusAtual = 'Ocupado'";
+            const logDescription = `A reserva do quarto ${roomId} foi realizada`;
+            const stringSql = "INSERT INTO reserva(dataEntrada,dataSaida,idFormaPagamento,qtdePessoas,fk_idFuncionario,fk_idHospede,fk_numeroQuarto,contadorCheckin,statusCheckin, observacoes) VALUES(?,?,?,?,?,?,?,?,?,?)";
+            const roomUpdate = "UPDATE quartos SET statusAtual = 'Ocupado' WHERE numero = ?";
             const connection = await this.getConnection();
             const fields = [
                 entryDate,
@@ -115,28 +126,30 @@ class ReserveInteractor implements Interactor {
                 guestId,
                 roomId,
                 checkinAmount,
-                status
+                status,
+                observation,
             ];
 
             await connection.execute(stringSql, fields);
             const lastId = await this.getLastId(connection);
-            await connection.execute(roomUpdate);
+            await connection.execute(roomUpdate, [roomId]);
 
             connection.end();
             LogInteractor.insert(logTitle, logDescription);
 
-            return true;
+            return lastId;
         }
         catch(error){
             throw error;
         }
     }
 
-    async update(id: number, entryDate: Date, checkoutDate: Date, amountPeople: number, roomId: number, guestId: number, employeeId: number, status: boolean, checkinAmount: number, payment: number): Promise<boolean> {
+    async update(id: number, entryDate: Date, checkoutDate: Date, amountPeople: number, roomId: number, guestId: number, employeeId: number, status: boolean, checkinAmount: number, payment: number, observation): Promise<boolean> {
         try{
+            console.log("Atualizando");
             const logTitle = "Reserva Atualizada!";
             const logDescription = `A reserva de ID ${id} foi atualizada.`
-            const stringSql = "UPDATE reserva SET dataEntrada = ?, dataSaida = ?, idFormaPagamento = ?, qtdePessoas = ?, fk_idFuncionario = ?, fk_idHospede = ?, fk_numeroQuarto = ?, contadorCheckin = ?, statusCheckin = ? WHERE id = ?";
+            const stringSql = "UPDATE reserva SET dataEntrada = ?, dataSaida = ?, idFormaPagamento = ?, qtdePessoas = ?, fk_idFuncionario = ?, fk_idHospede = ?, fk_numeroQuarto = ?, contadorCheckin = ?, statusCheckin = ?, observacao = ? WHERE id = ?";
             const connection = await this.getConnection();
 
             await connection.execute(stringSql,
@@ -160,6 +173,27 @@ class ReserveInteractor implements Interactor {
         }
         catch(error){
             throw error;
+        }
+    }
+
+    async makeCheckin(reserveId: number, status: string, checkinAmount: number, lastCheckin: string): Promise<boolean> {
+        try {
+            const logTitle = "Reserva Atualizada!";
+            const logDescription = `Checkin realizado na reserva de ID ${reserveId}.`
+            const stringSql = "UPDATE reserva SET statusCheckin = ?,contadorCheckin = ?, ultimoCheckin = ? WHERE id = ?";
+            const connection = await this.getConnection();
+            console.log(`${reserveId} - ${status} - ${checkinAmount}`);
+    
+            await connection.execute(stringSql, [status, checkinAmount, lastCheckin,reserveId]);
+            console.log("OK");
+            connection.end();
+            LogInteractor.insert(logTitle, logDescription);
+    
+            return true;
+        }
+        catch(error){
+            console.log(error)
+            return false;
         }
     }
 
