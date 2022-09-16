@@ -1,100 +1,134 @@
 import { Request, Response } from "express";
-import Status from "../Entity/Status";
-import Database from "../Interactor/Database";
-import GuestInteractor from "../Interactor/GuestInteractor";
+import GuestInteractor from "../Interactors/GuestInteractor";
+import Database from "../Modules/Database";
+import HttpStatus from "../Modules/HttpStatus";
 import Router from "./Router";
 
-/**
- * Router responsável por receber todas as requisições
- * vindo da rota guest e encaminhar os dados para camada
- * Interactor.
- * 
- * Consulte a interface Router para saber mais sobre
- * cada um dos métodos.
- * 
- * @author Herik Aparecida
- */
 class GuestRouter implements Router {
     private guestInteractor: GuestInteractor;
 
-    constructor(database: Database){
-        this.guestInteractor = new GuestInteractor(database)
+    constructor(database: Database) {
+        this.guestInteractor = new GuestInteractor(database);
     }
 
-    async get(request: Request, response: Response) {
-        const guestId = parseInt(request.params.id);
+    private validateInsertFields(body: any): boolean {
+        return body.name && body.CPF && body.contactPhone && body.sex && body.city;
+    }
 
-        if(guestId){
-            const guest = await this.guestInteractor.findByPk(guestId);
-    
-            if(guest){
-                return response.status(Status.OK.code).json(guest);
+    private validateUpdateFields(body: any): boolean {
+        return this.validateInsertFields(body) && body.lastAccommodationId && body.id;
+    }
+
+    async get(request: Request, response: Response): Promise<Response> {
+        if(request.params.id == "*"){
+            const guestList = await this.guestInteractor.find("nome", "%");
+
+            if(guestList.length > 0){
+                return response.status(HttpStatus.OK).send(guestList);
             }
+
+            return response.status(HttpStatus.NOT_FOUND).send({message: "Sem hospedes cadastrados"});
         }
-        else {
-            const guestList = await this.guestInteractor.find("name", "%");
-            if(guestList){
-                console.log("\n\n\BUSCANDO\n");
-                console.log(guestList);
+        else{
+            const id = parseInt(request.params.id);
 
-                return response.status(Status.OK.code).json(guestList);
+            if(id){
+                const guestData = await this.guestInteractor.findByPk(id);
+
+                if(guestData){
+                    return response.status(HttpStatus.OK).send(guestData);
+                }
+
+                return response.status(HttpStatus.NOT_FOUND).send({message: "Hospede não encontrado"});
             }
+        }        
+    }
+    
+    async post(request: Request, response: Response): Promise<Response> {
+        if(request.body){
+            if(this.validateInsertFields(request.body)){
+                const guestData = request.body;
+    
+                try{
+                    const insertedId = await this.guestInteractor.insert(
+                        guestData.name,
+                        guestData.CPF,
+                        guestData.contactPhone,
+                        guestData.sex,
+                        guestData.city
+                    );
+                    
+                    return response.status(HttpStatus.CREATED).send(insertedId);
+                }
+                catch(error){
+                    console.log(error);
+                    if(error.code == "ER_DUP_ENTRY"){
+                        return response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({message: "CPF já existe"});
+    
+                    }
+                }
+            }
+            else{
+                return response.status(HttpStatus.BAD_REQUEST).send({message: "Verifique os campos enviados"});
+            }
+            
         }
         
-        return response.status(Status.NOT_FOUND.code).json(Status.NOT_FOUND);
+        return response.status(HttpStatus.BAD_REQUEST).send({message: "Requisição inválida. O corpo da requisição esta vazia"});
     }
-
-    async post(request: Request, response: Response) {
-        console.log("INSERIR GUEST");
-        const guestData = request.body;
-        console.log(guestData);
-        const insertedId = await this.guestInteractor.insert(
-            guestData.name,
-            guestData.cpf,
-            guestData.photo,
-            guestData.contactPhone,
-            guestData.city,
-            guestData.companyId
-        )
-
-        if(insertedId){
-            return response.status(Status.OK.code).json({lastId: insertedId});
-        }
-    }
-
+    
     async put(request: Request, response: Response) {
-        const guestData = request.body;
-        console.log("\n\n\nATUALIZANDO\n");
-        console.log(guestData);
-        const hasUpdated = await this.guestInteractor.update(
-            guestData.id,
-            guestData.name,
-            guestData.cpf,
-            guestData.photo,
-            guestData.contactPhone,
-            guestData.city,
-            guestData.companyId,
-            guestData.lastAcommodationId
-        );
-
-        if(hasUpdated){
-            return response.status(Status.OK.code).json(Status.OK);
+        if(request.body){
+            if(this.validateUpdateFields(request.body)){
+                const guestData = request.body;
+    
+                try{
+                    await this.guestInteractor.update(
+                        guestData.id,
+                        guestData.name,
+                        guestData.CPF,
+                        guestData.contactPhone,
+                        guestData.sex,
+                        guestData.city,
+                        guestData.lastAccommodationId
+                    );
+    
+                    return response.status(204).send();
+                }
+                catch(error){
+                    return response.status(500).send({message: "CPF já existe"});
+                }
+            }
+            else{
+                return response.status(HttpStatus.BAD_REQUEST).send({message: "Verifique os campos enviados"});
+            }
         }
 
-        return response.status(Status.NOT_FOUND.code).json(Status.NOT_FOUND);
+        return response.status(HttpStatus.BAD_REQUEST).send({message: "Requisição inválida. O corpo da requisição esta vazia"});
     }
-
+    
     async delete(request: Request, response: Response) {
-        const guestId = parseInt(request.body.id);
+        const guestId = parseInt(request.params.id);
+        
+        if(guestId){
+            try{
+                const hasDeleted = await this.guestInteractor.delete(guestId);
 
-        const hasDeleted = await this.guestInteractor.delete(guestId);
-
-        if(hasDeleted){
-            return response.status(Status.OK.code).json(Status.OK);
+                if(hasDeleted){
+                    return response.status(204).send();
+                }
+                
+                return response.status(HttpStatus.NOT_FOUND).send({message: "Hospede não encontrado"}).send();
+            }
+            catch(error){
+                console.log(error);
+                return response.status(HttpStatus.NOT_FOUND).send({message: "Hospede não encontrado"}).send();
+            }
         }
 
-        return response.status(Status.NOT_FOUND.code).json(Status.NOT_FOUND);
+        return response.status(HttpStatus.BAD_REQUEST).send();
     }
+    
 }
 
-export default GuestRouter
+export default GuestRouter;

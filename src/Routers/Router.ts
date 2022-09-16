@@ -1,28 +1,31 @@
 import { Request, Response } from "express";
 
-/**
- * Interface que deve ser implementada para utilizar
- * roteamento no sistema.
- */
 interface Router {
-
     /**
-     * Requisitar dados do servidor
+     * Retorna os dados solicitados pelo cliente.
+     * @param request Requisição contendo os dados enviados para o servidor
+     * @param response Resposta contendo os dados que serão enviados ao cliente
      */
     get(request: any, response: any): any;
 
     /**
-     * Inserir dados no banco de dados.
+     * Envia os dados para realizar inserções no banco de dados.
+     * @param request Requisição contendo os dados enviados para o servidor
+     * @param response Resposta contendo os dados que serão enviados ao cliente
      */
     post(request: any, response: any): any;
-
+    
     /**
-     * Atualizar dados no banco de dados.
+     * Envia os dados para realizar atualizações no banco de dados.
+     * @param request Requisição contendo os dados enviados para o servidor
+     * @param response Resposta contendo os dados que serão enviados ao cliente
      */
     put(request: any, response: any): any;
-
+    
     /**
-     * Remover dados do banco de dados,
+     * Remove os dados de uma determinada entidade do banco de dados.
+     * @param request Requisição contendo os dados enviados para o servidor
+     * @param response Resposta contendo os dados que serão enviados ao cliente
      */
     delete(request: any, response: any): any;
 }
