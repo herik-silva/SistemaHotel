@@ -1,6 +1,7 @@
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import RoomInteractor from "../Interactors/RoomInteractor";
 import Database from "../Modules/Database";
+import Http from "../Modules/Http";
 import HttpStatus from "../Modules/HttpStatus";
 import Router from "./Router";
 
@@ -19,19 +20,18 @@ class RoomRouter implements Router {
         return this.validateInsertFields(body) && body.id && body.status;
     }
 
-    async get(request: Request, response: Response): Promise<Response> {
+    async get(request: Request, response: Response) {
         if(request.params.id == "*"){
             try{
                 const roomList = await this.roomInteractor.find("number","%");
                 
-                if(roomList.length > 0){
-                    return response.status(HttpStatus.OK).send(roomList);
-                }
-                
-                return response.status(HttpStatus.NOT_FOUND).send({message: "Nenhum quarto encontrado"});
+                if(roomList.length > 0)
+                    Http.sendResponse(response, HttpStatus.OK, roomList);
+                else
+                    Http.sendResponse(response, HttpStatus.NOT_FOUND, {message: "Nenhum quarto encontrado"});
             }
             catch(error){
-                return response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({message: "Aconteceu um erro inesperado"});
+                Http.sendResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, {message: "Aconteceu um erro inesperado"});
             }
         }
         else{
@@ -39,15 +39,15 @@ class RoomRouter implements Router {
 
             try{
                 const room = await this.roomInteractor.findByPk(id);
-                return response.status(HttpStatus.OK).send(room);
+                Http.sendResponse(response, HttpStatus.OK, room);
             }
             catch(error){
-                return response.status(HttpStatus.NOT_FOUND).send({message: "Quarto não encontrado"})
+                Http.sendResponse(response, HttpStatus.NOT_FOUND, {message: "Quarto não encontrado"})
             }
         }
     }
     
-    async post(request: Request, response: Response): Promise<Response> {
+    async post(request: Request, response: Response) {
         if(request.body){
             console.log(request.body);
             if(this.validateInsertFields(request.body)){
@@ -60,24 +60,26 @@ class RoomRouter implements Router {
                         roomData.image
                     );
     
-                    return response.status(HttpStatus.CREATED).send({message: "Quarto inserido", insertedId});
+                    Http.sendResponse(response, HttpStatus.CREATED, {message: "Quarto inserido", insertedId});
                 }
                 catch(error){
                     if(error.code == "ER_DUP_ENTRY"){
-                        return response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({message: "Já existe um quarto com esse número"});
+                        Http.sendResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, {message: "Já existe um quarto com esse número"});
                     }
     
-                    return response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({message: "O servidor não conseguiu responder"});
+                    Http.sendResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, {message: "O servidor não conseguiu responder"});
                 }
             }
-
-            return response.status(HttpStatus.BAD_REQUEST).send({message: "Requisição inválida. Verifique os campos enviados"});
+            else{
+                Http.sendResponse(response, HttpStatus.BAD_REQUEST, {message: "Requisição inválida. Verifique os campos enviados"});
+            }
         }
-
-        return response.status(HttpStatus.BAD_REQUEST).send({message: "Requisição inválida. Sem conteúdo no corpo da requisição"});
+        else{
+            Http.sendResponse(response, HttpStatus.BAD_REQUEST, {message: "Requisição inválida. Sem conteúdo no corpo da requisição"});
+        }
     }
     
-    async put(request: Request, response: Response): Promise<Response> {
+    async put(request: Request, response: Response) {
         if(request.body){
             console.log(request.body);
 
@@ -93,38 +95,41 @@ class RoomRouter implements Router {
                         roomData.image
                     );
     
-                    return response.status(HttpStatus.NO_CONTENT).send();
+                    Http.sendResponse(response, HttpStatus.NO_CONTENT);
                 }
                 catch(error){
                     if(error.code == "ER_DUP_ENTRY"){
-                        return response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({message: "Já existe um quarto com esse número"});
+                        Http.sendResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, {message: "Já existe um quarto com esse número"});
                     }
                     
-                    return response.status(HttpStatus.NOT_FOUND).send({message: "Quarto não encontrado"});
+                    Http.sendResponse(response, HttpStatus.NOT_FOUND, {message: "Quarto não encontrado"});
                 }
             }
-
-            return response.status(HttpStatus.BAD_REQUEST).send({message: "Requisição inválida. Verifique os campos enviados"});
+            else{
+                Http.sendResponse(response, HttpStatus.BAD_REQUEST, {message: "Requisição inválida. Verifique os campos enviados"});
+            }
         }
-
-        return response.status(HttpStatus.BAD_REQUEST).send({message: "Requisição inválida. Sem conteúdo no corpo da requisição"});
+        else{
+            Http.sendResponse(response, HttpStatus.BAD_REQUEST, {message: "Requisição inválida. Sem conteúdo no corpo da requisição"});
+        }
     }
     
-    async delete(request: Request, response: Response): Promise<Response> {
+    async delete(request: Request, response: Response) {
         if(request.params.id){
             const id = parseInt(request.params.id);
 
             try{
                 await this.roomInteractor.delete(id);
 
-                return response.status(HttpStatus.NO_CONTENT).send();
+                Http.sendResponse(response, HttpStatus.NO_CONTENT);
             }
             catch(error){
-                return response.status(HttpStatus.NOT_FOUND).send({message: "Quarto não encontrado!"});
+                Http.sendResponse(response, HttpStatus.NOT_FOUND, {message: "Quarto não encontrado!"});
             }
         }
-
-        return response.status(HttpStatus.BAD_REQUEST).send({message: "Requisição inválida. Necessário informar o ID para exclusão"});
+        else{
+            Http.sendResponse(response, HttpStatus.BAD_REQUEST, {message: "Requisição inválida. Necessário informar o ID para exclusão"});
+        }
     }
 
 }

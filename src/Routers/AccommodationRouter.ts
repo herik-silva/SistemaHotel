@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import AccommodationInteractor from "../Interactors/AccommodationInteractor";
 import Database from "../Modules/Database";
+import Http from "../Modules/Http";
 import HttpStatus from "../Modules/HttpStatus";
 import Router from "./Router";
 
@@ -27,16 +28,17 @@ class AccommodationRouter implements Router {
         return body.name && body.dailyCost;
     }
 
-    async get(request: Request, response: Response): Promise<Response> {
+    async get(request: Request, response: Response) {
         if(request.params.id){
             if(request.params.id == "*"){
                 const accommodationList = await this.accommodationInteractor.find("%");
     
                 if(accommodationList.length > 0){
-                    return response.status(HttpStatus.OK).send(accommodationList);
+                    Http.sendResponse(response, HttpStatus.OK, accommodationList);
                 }
-    
-                return response.status(HttpStatus.NOT_FOUND).send({message: "Sem acomodações cadastradas"});
+                else{
+                    Http.sendResponse(response, HttpStatus.NOT_FOUND, {message: "Sem acomodações cadastradas"});
+                }
             }
             else{
                 const id = parseInt(request.params.id);
@@ -44,18 +46,20 @@ class AccommodationRouter implements Router {
                     const accommodation = await this.accommodationInteractor.findByPk(id);
     
                     if(accommodation){
-                        return response.status(HttpStatus.OK).send(accommodation);
+                        Http.sendResponse(response, HttpStatus.OK, accommodation);
                     }
-                    
-                    return response.status(HttpStatus.NOT_FOUND).send({message: "Acomodação não encontrada"});
+                    else{
+                        Http.sendResponse(response, HttpStatus.NOT_FOUND, {message: "Acomodação não encontrada"});
+                    }
                 }
             }
         }
-
-        return response.status(HttpStatus.BAD_REQUEST).send({message: "Requisição inválida. No parâmetro ID deve conter apenas números ou asterísco(*)"})
+        else{
+            Http.sendResponse(response, HttpStatus.BAD_REQUEST, {message: "Requisição inválida. No parâmetro ID deve conter apenas números ou asterísco(*)"})
+        }
     }
 
-    async post(request: Request, response: Response): Promise<Response> {
+    async post(request: Request, response: Response) {
         if(request.body){
             const validatedFields = this.validateFields(request.body);
 
@@ -63,16 +67,18 @@ class AccommodationRouter implements Router {
                 const accommodationData = request.body;
                 const lastId = await this.accommodationInteractor.insert(accommodationData.name, accommodationData.dailyCost);
                 
-                return response.status(HttpStatus.CREATED).send({lastId});
+                Http.sendResponse(response, HttpStatus.CREATED, {lastId});
             }
-            
-            return response.status(HttpStatus.BAD_REQUEST).send({message: "Campos inválidos. Verifique os campos que são enviados."});
+            else{
+                Http.sendResponse(response, HttpStatus.BAD_REQUEST, {message: "Campos inválidos. Verifique os campos que são enviados."});
+            }
         }
-
-        return response.status(HttpStatus.BAD_REQUEST).send({message: "Requisição inválida. O corpo da requisição está vazia"});
+        else{
+            Http.sendResponse(response, HttpStatus.BAD_REQUEST, {message: "Requisição inválida. O corpo da requisição está vazia"});
+        }
     }
     
-    async put(request: Request, response: Response): Promise<Response> {
+    async put(request: Request, response: Response) {
         if(request.body){
             const validatedFields = this.validateFields(request.body) && request.body.id;
 
@@ -85,36 +91,40 @@ class AccommodationRouter implements Router {
                 );
                 
                 if(hasUpdated)
-                    return response.status(HttpStatus.NO_CONTENT).send();
-    
-                return response.status(HttpStatus.NOT_FOUND).send({message: "Acomodação não encontrada. ID inválido"});
+                    Http.sendResponse(response, HttpStatus.NO_CONTENT);
+                else
+                    Http.sendResponse(response, HttpStatus.NOT_FOUND, {message: "Acomodação não encontrada. ID inválido"});
             }
-
-            return response.status(HttpStatus.BAD_REQUEST).send({message: "Campos inválidos. Verifique os campos que são enviados."});
+            else{
+                Http.sendResponse(response, HttpStatus.BAD_REQUEST, {message: "Campos inválidos. Verifique os campos que são enviados."});
+            }
         }
-
-        return response.status(HttpStatus.BAD_REQUEST).send({message: "Requisição inválida. O corpo da requisição está vazia"});
+        else{
+            Http.sendResponse(response, HttpStatus.BAD_REQUEST, {message: "Requisição inválida. O corpo da requisição está vazia"});
+        }
     }
 
-    async delete(request: Request, response: Response): Promise<Response> {
+    async delete(request: Request, response: Response) {
         if(request.params.id){
             try{
                 const id = parseInt(request.params.id);
                 
                 if(id){
                     const hasDeleted = await this.accommodationInteractor.delete(id);
-                    const statusCode = hasDeleted ? HttpStatus.NO_CONTENT : HttpStatus.NOT_FOUND;
-        
-                    return response.status(statusCode).send();
+                    
+                    if(hasDeleted)
+                        Http.sendResponse(response, HttpStatus.NOT_FOUND); 
+                    else
+                        Http.sendResponse(response, HttpStatus.NOT_FOUND, {message: "Acomodação não encontrada. ID inválido."});
                 }
             }
             catch(error){
                 console.log(error);
                 return response.status(HttpStatus.BAD_REQUEST).send({message: "O parâmero ID deve ser um número inteiro"});
             }
-    
-    
-            return response.status(400);
+        }
+        else{
+            Http.sendResponse(response, HttpStatus.BAD_REQUEST, {message: "Requisição inválida."});
         }
     }
 }

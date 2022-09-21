@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import GuestInteractor from "../Interactors/GuestInteractor";
 import Database from "../Modules/Database";
+import Http from "../Modules/Http";
 import HttpStatus from "../Modules/HttpStatus";
 import Router from "./Router";
 
@@ -19,15 +20,16 @@ class GuestRouter implements Router {
         return this.validateInsertFields(body) && body.lastAccommodationId && body.id;
     }
 
-    async get(request: Request, response: Response): Promise<Response> {
+    async get(request: Request, response: Response) {
         if(request.params.id == "*"){
             const guestList = await this.guestInteractor.find("nome", "%");
 
             if(guestList.length > 0){
-                return response.status(HttpStatus.OK).send(guestList);
+                Http.sendResponse(response, HttpStatus.OK, guestList);
             }
-
-            return response.status(HttpStatus.NOT_FOUND).send({message: "Sem hospedes cadastrados"});
+            else{
+                Http.sendResponse(response, HttpStatus.NOT_FOUND, {message: "Sem hospedes cadastrados"});
+            }
         }
         else{
             const id = parseInt(request.params.id);
@@ -36,15 +38,16 @@ class GuestRouter implements Router {
                 const guestData = await this.guestInteractor.findByPk(id);
 
                 if(guestData){
-                    return response.status(HttpStatus.OK).send(guestData);
+                    Http.sendResponse(response, HttpStatus.OK, guestData);
                 }
-
-                return response.status(HttpStatus.NOT_FOUND).send({message: "Hospede não encontrado"});
+                else{
+                    Http.sendResponse(response, HttpStatus.NOT_FOUND, {message: "Hospede não encontrado"});
+                }
             }
         }        
     }
     
-    async post(request: Request, response: Response): Promise<Response> {
+    async post(request: Request, response: Response) {
         if(request.body){
             if(this.validateInsertFields(request.body)){
                 const guestData = request.body;
@@ -58,23 +61,23 @@ class GuestRouter implements Router {
                         guestData.city
                     );
                     
-                    return response.status(HttpStatus.CREATED).send(insertedId);
+                    Http.sendResponse(response, HttpStatus.CREATED, insertedId);
                 }
                 catch(error){
                     console.log(error);
                     if(error.code == "ER_DUP_ENTRY"){
-                        return response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({message: "CPF já existe"});
-    
+                        Http.sendResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, {message: "CPF já existe"});
                     }
                 }
             }
             else{
-                return response.status(HttpStatus.BAD_REQUEST).send({message: "Verifique os campos enviados"});
+                Http.sendResponse(response, HttpStatus.BAD_REQUEST, {message: "Verifique os campos enviados"});
             }
             
         }
-        
-        return response.status(HttpStatus.BAD_REQUEST).send({message: "Requisição inválida. O corpo da requisição esta vazia"});
+        else{
+            Http.sendResponse(response, HttpStatus.BAD_REQUEST, {message: "Requisição inválida. O corpo da requisição esta vazia"});
+        }
     }
     
     async put(request: Request, response: Response) {
@@ -93,18 +96,19 @@ class GuestRouter implements Router {
                         guestData.lastAccommodationId
                     );
     
-                    return response.status(204).send();
+                    Http.sendResponse(response, HttpStatus.NO_CONTENT);
                 }
                 catch(error){
-                    return response.status(500).send({message: "CPF já existe"});
+                    Http.sendResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, {message: "CPF já existe"});
                 }
             }
             else{
-                return response.status(HttpStatus.BAD_REQUEST).send({message: "Verifique os campos enviados"});
+                Http.sendResponse(response, HttpStatus.BAD_REQUEST, {message: "Verifique os campos enviados"});
             }
         }
-
-        return response.status(HttpStatus.BAD_REQUEST).send({message: "Requisição inválida. O corpo da requisição esta vazia"});
+        else{
+            Http.sendResponse(response, HttpStatus.BAD_REQUEST, {message: "Requisição inválida. O corpo da requisição esta vazia"});
+        }
     }
     
     async delete(request: Request, response: Response) {
@@ -115,20 +119,20 @@ class GuestRouter implements Router {
                 const hasDeleted = await this.guestInteractor.delete(guestId);
 
                 if(hasDeleted){
-                    return response.status(204).send();
+                    Http.sendResponse(response, HttpStatus.NO_CONTENT);
                 }
                 
-                return response.status(HttpStatus.NOT_FOUND).send({message: "Hospede não encontrado"}).send();
+                Http.sendResponse(response, HttpStatus.NOT_FOUND, {message: "Hospede não encontrado"});
             }
             catch(error){
                 console.log(error);
-                return response.status(HttpStatus.NOT_FOUND).send({message: "Hospede não encontrado"}).send();
+                Http.sendResponse(response, HttpStatus.NOT_FOUND, {message: "Hospede não encontrado"});
             }
         }
-
-        return response.status(HttpStatus.BAD_REQUEST).send();
+        else{
+            Http.sendResponse(response, HttpStatus.BAD_REQUEST, {message: "Requisição inválida. O ID deve ser um número"});
+        }
     }
-    
 }
 
 export default GuestRouter;

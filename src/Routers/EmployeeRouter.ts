@@ -63,7 +63,6 @@ class EmployeeRouter implements Router {
                     Http.sendResponse(response, HttpStatus.CREATED, insertedId);
                 }
                 catch(error){
-                    console.log(error);
                     if(error.code == "ER_DUP_ENTRY"){
                         Http.sendResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, {message: "Nome já existe"});
                     }
@@ -116,20 +115,16 @@ class EmployeeRouter implements Router {
         const employeeId = parseInt(request.params.id);
         
         if(employeeId){
-            console.log("TENTAR");
             try{
                 const hasDeleted = await this.employeeInteractor.delete(employeeId);
-                console.log("deletado? ", hasDeleted);
                 if(hasDeleted){
                     Http.sendResponse(response, HttpStatus.NO_CONTENT);
                 }
                 else{
-                    console.log("Não dá");
                     Http.sendResponse(response, HttpStatus.NOT_FOUND, {message: "Funcionário não encontrado"});
                 }
             }
             catch(error){
-                console.log(error);
                 Http.sendResponse(response, HttpStatus.NOT_FOUND, {message: "Funcionário não encontrado"});
             }
         }

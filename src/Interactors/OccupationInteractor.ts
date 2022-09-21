@@ -97,30 +97,44 @@ class OccupationInteractor implements Interactor {
         }
     }
     
-    async update(id: number, reserveId: number, initDate: Date, endDate: Date, guestId: number, amountPeople: number, observations: string, lastCheckin: Date, amountCheckin: number): Promise<void> {
+    async update(id: number, reserveId: number, initDate: Date, endDate: Date, guestId: number, amountPeople: number, observations: string, lastCheckin: Date, amountCheckin: number): Promise<boolean> {
         const stringSql = "UPDATE ocupacoes SET fk_id_reserva = ?, data_inicio = ?, data_fim = ?, fk_id_hospede = ?, ultimo_checkin = ?, quantidade_checkin = ?, quantidade_pessoas = ?, observacoes = ? WHERE id = ?";
 
         try{
             const connection = await this.database.getConnection();
+            const row = await connection.execute(stringSql, [reserveId, initDate.getTime(), endDate.getTime(), guestId, amountPeople, observations, lastCheckin, amountCheckin, id]);
+            const changedRows = row[0]["changedRows"];
             
-            await connection.execute(stringSql, [reserveId, initDate.getTime(), endDate.getTime(), guestId, amountPeople, observations, lastCheckin, amountCheckin, id]);
             await connection.end();
-            LogInteractor.insert("Ocupação atualizada", `A ocupação de ID ${id} foi atualizada`);
+            
+            if(changedRows>0){
+                LogInteractor.insert("Ocupação atualizada", `A ocupação de ID ${id} foi atualizada`);
+                return true;
+            }
+            
+            return false;
         }
         catch(error){
             throw error;
         }
     }
     
-    async delete(id: number): Promise<void> {
+    async delete(id: number): Promise<boolean> {
         const stringSql = "UPDATE ocupacoes SET removido = 1 WHERE id = ?";
 
         try{
             const connection = await this.database.getConnection();
+            const row = await connection.execute(stringSql, id);
+            const affectedRows = row[0]["affectedRows"];
 
-            await connection.execute(stringSql, id);
             await connection.end();
-            LogInteractor.insert("Ocupação removida", `A acomodação de ID ${id} foi removida`)
+            
+            if(affectedRows>0){
+                LogInteractor.insert("Ocupação removida", `A acomodação de ID ${id} foi removida`)
+                return true;
+            }
+
+            return false;
         }
         catch(error){
             throw error;
